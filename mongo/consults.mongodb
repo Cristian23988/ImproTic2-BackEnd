@@ -1,0 +1,27 @@
+/* ---- Comentar las lineas que NO seran ejecutadas ----*/
+
+const database = 'ImproTicDB';
+use(database);
+
+// HU_001: cuando necesite registrarme en el sistema entonces podré ingresar los datos de registro (Incluyendo elegir el rol al que aspiro).
+
+// Validar que no se encuentre en la BD.
+/*db.users.find({documentId: 1230182630});
+
+// Insertar si no esta en la BD
+db.users.insertOne({
+    "email": "juanito@mail.co",
+    "documentId": Long('1230182630'),
+    "name": "Juan",
+    "lastName": "Bravo",
+    "fullName": "Juan Bravo",
+    "role": "student",
+    "status": "pending",
+    "password": "juan+bravo"
+  });
+*/
+
+// HU_002: Crear comandos para ejecutar en la base de datos MongoDB cuando necesite autenticarme en el sistema entonces podré ingresar mi correo y contraseña para ser validados.
+db.users.findOne({email: "juanito@mail.co", password: "juan+bravo"});
+
+// HU_003: ...
