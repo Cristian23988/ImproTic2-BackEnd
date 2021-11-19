@@ -1,12 +1,17 @@
 // MongoDB Playground
 // Use Ctrl+Space inside a snippet or a string literal to trigger completions.
 
+/* Es una relacion entre varios documentos, en este caso a la hora de realizar consulta sobre el proyecto 
+ * se junta con la informacion del estudiante.
+ */
+
 // BD name
 const database = 'ImproTicDB';
 
 // The current database to use.
 use(database);
 
+//execute in collection projects
 db.users.aggregate([{
   $match: { role: 'student' }
 }, {
