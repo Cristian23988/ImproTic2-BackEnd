@@ -4,9 +4,9 @@ const database = 'ImproTicDB';
 use(database);
 
 // HU_001: cuando necesite registrarme en el sistema entonces podré ingresar los datos de registro (Incluyendo elegir el rol al que aspiro).
-
+/*
 // Validar que no se encuentre en la BD.
-/*db.users.find({documentId: 1230182630});
+db.users.count({documentId: 1230182630});
 
 // Insertar si no esta en la BD
 db.users.insertOne({
@@ -22,6 +22,55 @@ db.users.insertOne({
 */
 
 // HU_002: Crear comandos para ejecutar en la base de datos MongoDB cuando necesite autenticarme en el sistema entonces podré ingresar mi correo y contraseña para ser validados.
-db.users.findOne({email: "juanito@mail.co", password: "juan+bravo"});
 
-// HU_003: ...
+//Validar que el correo y la contraseña existan en la colección de “users”. Ejemplo:
+//db.users.find({email: "juanito@mail.co", password: "juan+bravo"}).count();
+
+//Si existe el correo, entonces se lista los datos del usuario con el estado de autorizado. Ejemplo:
+//db.users.findOne({email: "juanito@mail.co", password: "juan+bravo", status: "authorized"});
+
+// HU_003: Crear comandos para ejecutar en la base de datos MongoDB cuando necesite actualizar la información personal entonces podré ingresar los datos que deseo actualizar.
+/*
+db.users.findOneAndUpdate(
+   { documentId : 1230182630 },
+   { $set: { name: "Juan", lastName: "Bravo", fullName: "Juan Bravo"} }, 
+   { upsert: true, returnNewDocument : true},
+);
+*/
+
+// HU_004: Crear comandos para ejecutar en la base de datos MongoDB cuando requiera ver la lista de los usuarios registrados en la plataforma (Tanto autorizados como no autorizados) entonces podré ver la información de los usuarios registrados en la plataforma.
+
+//db.users.find({status: {$in: ["authorized", "unauthorized"]}});
+
+// HU_005: Crear comandos para ejecutar en la base de datos MongoDB cuando requiera aceptar un usuario en la plataforma entonces podré cambiar el estado del usuario.
+/*
+//Listar los usuarios que aun no estan aceptados
+//db.users.find({status: "pending"});
+
+//Actualizar el estado del usuario
+db.users.findOneAndUpdate(
+   { documentId : 1230182630 },
+   { $set: { status: "authorized"} }, 
+   { upsert: true, returnNewDocument : true},
+);
+*/
+// HU_006: Crear comandos para ejecutar en la base de datos MongoDB cuando requiera ver la lista de proyectos registrados en la plataforma entonces podré ver la lista de los proyectos registrados en la plataforma.
+
+//db.projects.find();
+
+// HU_007: Crear comandos para ejecutar en la base de datos MongoDB cuando requiera aprobar la creación de un proyecto entonces podré  actualizar el estado del  proyecto.
+
+//Validar si la existe la fase del proyecto.
+db.projects.find({name: "Seguridad en redes sociales", phase: {$exists: false} });
+
+//Actualizar el estado del proyecto, si la fase no existe se actualiza a iniciado y la fecha.
+/*db.projects.findOneAndUpdate(
+   { name: "Seguridad en redes sociales" },
+   { $set: { 
+        status: "active",
+        phase:   "started",
+        startDate: new Date()
+    } }, 
+   { upsert: true, returnNewDocument : true},
+);
+*/
