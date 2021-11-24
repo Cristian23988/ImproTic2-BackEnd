@@ -21,11 +21,9 @@ const usersSchema = new Schema({
   },
   role: {
     type: String,
-    enum: ['ADMIN', 'LEADER', 'STUDENT']
   },
   status: {
     type: String,
-    enum: ['PENDING', 'AUTHORIZED', 'UNAUTHORIZED']
   },
   password: {
     type: String,
