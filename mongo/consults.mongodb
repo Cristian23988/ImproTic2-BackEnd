@@ -4,11 +4,13 @@ const database = 'ImproTicDB';
 use(database);
 
 // HU_001: cuando necesite registrarme en el sistema entonces podré ingresar los datos de registro (Incluyendo elegir el rol al que aspiro).
-/*
+
 // Validar que no se encuentre en la BD.
-db.users.count({documentId: 1230182630});
+//db.users.deleteOne({documentId: 1230182630});
+//db.users.count({documentId: 1230182630});
 
 // Insertar si no esta en la BD
+/*
 db.users.insertOne({
     "email": "juanito@mail.co",
     "documentId": Long('1230182630'),
@@ -61,15 +63,254 @@ db.users.findOneAndUpdate(
 // HU_007: Crear comandos para ejecutar en la base de datos MongoDB cuando requiera aprobar la creación de un proyecto entonces podré  actualizar el estado del  proyecto.
 
 //Validar si la existe la fase del proyecto.
-db.projects.find({name: "Seguridad en redes sociales", phase: {$exists: false} });
+//db.projects.findOne({name: "Seguridad en redes sociales", phase: {$exists: false} });
 
 //Actualizar el estado del proyecto, si la fase no existe se actualiza a iniciado y la fecha.
-/*db.projects.findOneAndUpdate(
+/*
+db.projects.findOneAndUpdate(
    { name: "Seguridad en redes sociales" },
    { $set: { 
         status: "active",
         phase:   "started",
         startDate: new Date()
+    } }, 
+   { upsert: true, returnNewDocument : true},
+);
+*/
+
+//HU_008: Como administrador Dado que estoy viendo la lista de los proyectos registrados en la plataforma Cuando requiera activar o inactivar un proyecto Entonces podré actualizar el estado del proyecto.
+
+//Validar si la existe la fase del proyecto.
+//db.projects.findOne({name: "Robot auxiliar de parqueadero", phase: {$in: ['started','in progress']} });
+
+//Si el proyecto está activo y se encuentra en fase iniciado o en desarrollo.
+/*
+db.projects.findOneAndUpdate(
+   { name: "Robot auxiliar de parqueadero" },
+   { $set: { 
+        status: "inactive",
+        startDate: new Date(),
+    } }, 
+   { upsert: true, returnNewDocument : true},
+);
+//Al actualizar el projecto tambien debe actualizarse en inscripciones.
+//db.enrollments.findOne({project_id: {"$oid": "61985cf46c3a5b4035c9f42e"}, egressDate: {$exists, false} });
+db.enrollments.aggregate([{
+  $lookup: {
+    from: 'projects',
+    localField: 'project_id',
+    foreignField: '_id',
+    as: 'project'
+  }
+}, {
+  $enrollment: {
+    project_id: 0
+  }
+}]);
+*/
+
+//HU_009: Como administrador Dado que estoy viendo la lista de los proyectos registrados en la plataforma Cuando requiera cambiar la fase de un proyecto de “En desarrollo” a “Terminado” Entonces podré actualizar la fase del proyecto.
+//Validar si el proyecto está en la fase "En desarrollo".
+//db.projects.findOne({name: "Robot auxiliar de parqueadero", phase: 'in progress'});
+
+//Si el proyecto se encuentra en desarrollo.
+/*
+db.projects.findOneAndUpdate(
+   { name: "Robot auxiliar de parqueadero" },
+   { $set: { 
+        phase: "in progress"
+    } }, 
+   { upsert: true, returnNewDocument : true},
+);
+*/
+//HU_010: Como líder Dado que ingresé al sistema de gestión de proyectos Cuando requiera ver la lista de los estudiantes registrados en la plataforma (Tanto autorizados como no autorizados) Entonces podré ver la información de los estudiantes registrados en la plataforma.
+//db.users.find({role: "student", status: {$in: ["authorized", "unauthorized"]}});
+
+//HU_011: Como líder Dado que que estoy viendo la lista de los estudiantes registrados en la plataforma Cuando requiera aceptar un estudiante en la plataforma Entonces podré cambiar el estado del estudiante de “Pendiente” a “Autorizado”.
+//Validar si es estudiante y con estado pendiente.
+//db.users.find({documentId: 1230182630, role: "student", status: "pending"});
+/*
+db.users.findOneAndUpdate(
+   { documentId : 1230182630 },
+   { $set: { status: "authorized"} }, 
+   { upsert: true, returnNewDocument : true},
+);
+*/
+
+//HU_012: Como líder Dado que ingresé al sistema de gestión de proyectos Cuando requiera liderar un nuevo proyecto Entonces podré crear un nuevo proyecto.
+/*
+db.projects.insertOne({
+    name: "Proyecto 2",
+    generalObjective: "Objectivo general.",
+    specificObjectives: ["Objectivo especifico 1.", "Objectivo especifico 2."],
+    budget: Decimal128('1300000'),
+    startDate: new Date(),
+    endDate: new Date(new Date().getTime() + 60*24*60*60000),
+    leader_id: db.users.findOne({email: 'cami20@mail.co', role: "leader"})._id,
+    status: "active"
+});
+*/
+
+//HU_013: Como líder Dado que ingresé al sistema de gestión de proyectos Cuando requiera ver los proyectos que lidero (Tanto los que están en estado “Activo” como “Inactivo”). Entonces sólo podré listar los proyectos que tengo a cargo.
+/*
+db.projects.aggregate([{
+    $match: { leader_id: ObjectId("619804ce344ba4078c9c1e92") }
+  },
+  {
+    $lookup: {
+      from: 'users',
+      localField: 'leader_id',
+      foreignField: '_id',
+      as: 'leader'
+    }
+  }, {
+    $unwind: { path: '$leader' }
+  }, {
+    $addFields: {
+      leaderDocumentId: '$leader.documentId',
+      leaderName: '$leader.fullName'
+    }
+  }, {
+  $project: {
+    leader: 0,
+    leader_id: 0
+  }
+}]);
+*/
+
+//HU_014: Como líder Dado que estoy viendo la lista de los proyectos que he registrado en la plataforma Cuando requiera actualizar los datos de uno de los proyectos que lidero y que está en estado “Activo” Entonces podré editar la información relacionada al proyecto cuya información necesito actualizar (Solamente puede actualizar: Nombre del proyecto, los objetivos generales, específicos y el presupuesto).
+/*
+db.projects.findOneAndUpdate(
+   { name: "Robot auxiliar de parqueadero" , status: "active" , leader_id: ObjectId("619804ce344ba4078c9c1e92")},
+   { $set: { 
+      name: "Robot auxiliar de parqueadero",
+      generalObjective: "Automatizar la reservación y ocupación de parqueaderos.",
+      specificObjectives: ["Agendar en menor tiempo posible.", "Encontrar rapidamente la mejor ubicación dentro del parqueadero."],
+      budget: Decimal128('10000000'),
+    } }, 
+   { upsert: true, returnNewDocument : true},
+);
+*/
+
+//HU_015: Como líder Dado que ingresé al sistema de gestión de proyectos Cuando requiera revisar las solicitudes pendientes por aceptar o rechazar de estudiantes de inscripción a mis proyectos Entonces podré listar las solicitudes realizadas por los estudiantes.
+/*
+db.projects.aggregate([{
+    $match: { leader_id: ObjectId("619804ce344ba4078c9c1e92") }
+  },
+  {
+    $lookup: {
+      from: 'enrollments',
+      localField: '_id',
+      foreignField: 'project_id',
+      as: 'enroll'
+    }
+  }, {
+    $unwind: { path: '$enroll' }
+  }, {
+    $addFields: {
+      enrollName: '$enroll.user_id'
+    }
+  }, {
+  $project: {
+    enroll: 0,
+    enroll_id: 0
+  }
+}]);
+*/
+
+//HU_016: Como líder Dado que estoy viendo la lista de solicitudes de inscripción a los proyectos que lidero Cuando requiera cambiar el estado a la solicitudes Entonces podré aceptar o rechazar sus inscripciones.
+/*
+db.enrollments.findOneAndUpdate(
+   { project_id: ObjectId("61985cf46c3a5b4035c9f42d") },
+   { $set: { 
+      status: "rejected"
+    } }, 
+   { upsert: true, returnNewDocument : true},
+);
+*/
+
+//HU_017: Como líder Dado que estoy viendo la lista de los proyectos que he registrado en la plataforma Cuando necesite realizar una revisión a uno de mis proyectos Entonces podré listar la información relacionada al proyecto que deseo revisar (Incluyendo los avances).
+/*
+db.projects.aggregate([{
+    $match: { _id: ObjectId("61985cf46c3a5b4035c9f42d") }
+  },
+  {
+    $lookup: {
+      from: 'advances',
+      localField: '_id',
+      foreignField: 'project_id',
+      as: 'advance'
+    }
+  }, {
+    $unwind: { path: '$advance' }
+  }
+]);
+*/
+
+//HU_018: Como líder Dado que estoy viendo la lista de los avances registrados en uno de los proyectos que lidero Cuando necesite agregar observaciones a un avance en uno de mis proyectos Entonces podré actualizar el campo de observaciones del avance seleccionado.
+/*
+db.advances.findOneAndUpdate(
+   { project_id: ObjectId("61985cf46c3a5b4035c9f42e") },
+   { $set: { 
+      observations: "Eficiencia y disminución en tiempos de espera con la utilización del qr."
+    } }, 
+   { upsert: true, returnNewDocument : true},
+);
+*/
+
+//HU_019: Como estudiante Dado que ingresé al sistema de gestión de proyectos Cuando requiera ver la lista de proyectos registrados en la plataforma Entonces podré ver la lista de los proyectos registrados en la plataforma.
+/*
+db.projects.find({status: "active", phase: {$in: ["started","in progress"]}});
+*/
+
+//HU_020: Como estudiante Dado que estoy viendo la lista de los proyectos registrados en la plataforma Cuando requiera inscribirme en un proyecto Entonces podré generar una solicitud de inscripción al proyecto.
+/*
+db.enrollments.insertOne({
+    project_id: db.projects.findOne({name: 'Seguridad en redes sociales', status: "active"}, {_id: 1})._id,
+    user_id: db.users.findOne({email: 'cami20@mail.co'}, {_id: 1})._id
+});
+*/
+
+//HU_021: Como estudiante Dado que mi inscripción a un proyecto fue aceptada Cuando requiera listar los avances de un proyecto en el que estoy inscrito Entonces podré ver la lista de los avances del proyecto registrados.
+/*
+db.advances.aggregate([{
+    $match: { project_id: ObjectId("61985cf46c3a5b4035c9f42d") }
+  },
+  {
+    $lookup: {
+      from: 'projects',
+      localField: 'project_id',
+      foreignField: '_id',
+      as: 'project'
+    }
+  }, {
+    $unwind: { path: '$project' }
+  }, {
+    $addFields: {
+      projectName: '$project.name'
+    }
+  }, {
+  $project: {
+    project: 0
+  }
+  }]);
+*/
+
+//HU_022: Como estudiante Dado que estoy viendo la lista de proyectos Cuando requiera registrar avances a un proyecto en el que estoy inscrito (Y este se encuentra en estado activo) Entonces podré ingresar la descripción de mi avance en el proyecto.
+/*
+db.advances.insertOne({
+    project_id: db.projects.findOne({name: 'Auxiliar de parqueadero', status: "active"})._id,
+    addDate: new Date(),
+    description: 'Utilización de la ubicacion en google maps.',
+    observations: '',
+});
+*/
+
+//HU_023: Como estudiante Dado estoy viendo la lista de avances de un proyecto Cuando requiera actualizar la información de un avance Entonces podré modificar la descripción del avance.
+/*db.advances.findOneAndUpdate(
+   { _id: ObjectId("619804d4344ba4078c9c1e97") },
+   { $set: { 
+      description: "Conferencia en universidades sobre seguridad en redes sociales."
     } }, 
    { upsert: true, returnNewDocument : true},
 );
