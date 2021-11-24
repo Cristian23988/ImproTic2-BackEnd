@@ -165,7 +165,7 @@ const projects = [
     "startDate": new Date(),
     "endDate": new Date(new Date().getTime() + 60*24*60*60000),
     "leader_id": db.users.findOne({email: 'diazalejandro123456@gmail.com'})._id,
-    "status": "inactive"
+    "status": "active"
   },
   {
     "name": "Robot auxiliar de parqueadero",
@@ -175,17 +175,17 @@ const projects = [
     "startDate": new Date(),
     "endDate": new Date(new Date().getTime() + 60*24*60*60000),
     "leader_id": db.users.findOne({email: 'cfbravo@unimayor.edu.co'})._id,
-    "status": "inactive"
+    "status": "active"
   }
 ];
 
 // Insert projects
 db.getCollection(collection).insertMany(projects);
 
-// enrollments collection
+// enrollments collection - Inscripciones coleccion
 collection = 'enrollments';
 
-// Drop enrollments collection
+// Drop enrollments collection  - Borrar Inscripciones coleccion
 db.getCollection(collection).drop();
 
 /* Identificador único (inmutable), los identificadores del proyecto y estudiante (para relaciónarlos), 
@@ -194,7 +194,7 @@ db.getCollection(collection).drop();
  * fecha de egreso, automáticamente cuando la fase del proyecto se actualice a terminada o el estado del proyecto sea actualizado a inactivo.
  */
 
-// Create enrollments collection
+// Create enrollments collection - Crear Inscripciones coleccion
 db.createCollection(collection, {
   validator: {
     $jsonSchema: {
