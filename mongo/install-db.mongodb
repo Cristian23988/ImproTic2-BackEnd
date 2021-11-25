@@ -41,7 +41,7 @@ db.createCollection(collection, {
           bsonType: 'string'
         },
         role: {
-          enum: ["admin", "leader", "student"]
+          enum: ["ADMIN", "LEADER", "STUDENT"]
         },
         status: {
           enum: ["pending", "authorized", "unauthorized"]
