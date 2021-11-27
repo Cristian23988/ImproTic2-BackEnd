@@ -6,7 +6,7 @@ import bcrypt from 'bcrypt';
 import Users from "../models/users.model.js";
 
 const allUsers = async (parent, args, { user, errorMessage }) => {
-  if(!user) {
+  if(user) {
     throw new Error(errorMessage);
   }
   return await Users.find();
