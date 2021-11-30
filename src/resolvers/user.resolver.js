@@ -17,11 +17,13 @@ const user = async (parent, args, context) => {
   return user;
 };
 
-const register = async (parent, args, context) => {
+const register = async (parent, args) => {
+  console.log(args.input)
   const user = new Users({
     ...args.input,
     password: await bcrypt.hash(args.input.password, 12),
   });
+  console.log(user)
   return user.save();
 };
 
