@@ -29,7 +29,7 @@ db.createCollection(collection, {
           pattern: '^[a-z0-9+_.-]+@[a-z0-9.-]+$'
         },
         documentId: {
-          bsonType: 'long',
+          bsonType: 'number',
         },
         name: {
           bsonType: 'string'
@@ -61,43 +61,43 @@ db.getCollection(collection).createIndex({ documentId: 1 }, { unique: true });
 const users = [
   {
     "email": "manuelfsilvcr7@gmail.com",
-    "documentId": Long('1020312418'),
+    "documentId": 1020312418,
     "name": "Manuel",
     "lastName": "Silva",
     "fullName": "Manuel Silva",
     "role": "admin",
     "status": "pending",
-    "password": "manuel_silva_418"
+    "password": '$2b$12$G2l7qgq/YwhkiANObn1P9.VapCuqNPIwHsgz6DBor7OQN5dD651W6'
   },
   {
     "email": "diegofelipem99@gmail.com",
-    "documentId": Long('1020142312'),
+    "documentId": 1020142312,
     "name": "Diego",
     "lastName": "Muñoz",
     "fullName": "Diego Muñoz",
     "role": "student",
     "status": "pending",
-    "password": "diego_muñoz_418"
+    "password": '$2b$12$G2l7qgq/YwhkiANObn1P9.VapCuqNPIwHsgz6DBor7OQN5dD651W6'
   },
   {
     "email": "diazalejandro123456@gmail.com",
-    "documentId": Long('1020345678'),
+    "documentId": 1020345678,
     "name": "Diego",
     "lastName": "Diaz",
     "fullName": "Diego Diaz",
     "role": "leader",
     "status": "pending",
-    "password": "diego_diaz_678"
+    "password": '$2b$12$G2l7qgq/YwhkiANObn1P9.VapCuqNPIwHsgz6DBor7OQN5dD651W6'
   },
   {
     "email": "cfbravo@unimayor.edu.co",
-    "documentId": Long('1234567890'),
+    "documentId": 1234567890,
     "name": "Cristian",
     "lastName": "Bravo",
     "fullName": "Cristian Bravo",
     "role": "leader",
     "status": "pending",
-    "password": "cristian_bravo_890"
+    "password": '$2b$12$G2l7qgq/YwhkiANObn1P9.VapCuqNPIwHsgz6DBor7OQN5dD651W6'
   }
 ];
 
