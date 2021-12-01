@@ -14,8 +14,8 @@ const enrollmentType = gql`
 const enums = gql`
   # Enum for status values
   enum EnrollmentStatus {
-    ACEPTED
-    REJECTED
+    acepted
+    rejected
   }
 `;
 
@@ -25,6 +25,23 @@ const queries = gql`
     allEnrollments: [Enrollment]
   }
 `;
+
+const mutations = gql`
+  type Mutations {
+    register(input: RegisterInput!): Enrollment!
+  }
+
+`;
+
+const inputs = gql`
+  input RegisterInput {
+    status: String
+    enrollmentDate: String
+    egresDate: String
+  }
+`;
+
+
 
 export default [
   enrollmentType,

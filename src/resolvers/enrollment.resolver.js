@@ -18,6 +18,15 @@ const student = async (parent) => {
   return student;
 };
 
+const register = async (parent, args) => {
+  console.log(args.input)
+  const enrollment = new Enrollments({
+    ...args.input
+  });
+  console.log(enrollment)
+  return enrollment.save();
+};
+
 export default {
   Query: {
     allEnrollments
@@ -25,5 +34,8 @@ export default {
   Enrollment: {
     project,
     student,
+  },
+  enrollmentMutations:{
+    register
   }
 }
