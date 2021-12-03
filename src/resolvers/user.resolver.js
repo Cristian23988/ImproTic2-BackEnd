@@ -13,9 +13,23 @@ const allUsers = async (parent, args, { user, errorMessage }) => {
 };
 
 const user = async (parent, args, context) => {
+  console.log(args)
   const user = await Users.findById(args._id);
   return user;
 };
+
+const userById = async (parent, args, context) => {
+  console.log(args)
+  const user = await Users.findById(args._id);
+  return user;
+};
+const delet =async (args) => {
+  console.log(args)
+   const user = await Users.findOne({ _id: "61a9646cbf44ffebc37d9708" });
+  // return user.remove();
+
+ return user;
+}
 
 const register = async (parent, args) => {
   console.log(args.input)
@@ -54,10 +68,12 @@ export default {
   userQueries: {
     allUsers,
     user,
+    userById,
     userByEmail
   },
   userMutations: {
     register,
     login,
+    delet
   },
 }

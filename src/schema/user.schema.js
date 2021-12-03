@@ -37,7 +37,10 @@ const queries = gql`
   }
 
   type Query {
-    user(_id: ID!): User
+    userById(_id: ID!): User
+  }
+  type Query {
+    user: User!
   }
 
   type Query {
@@ -53,6 +56,9 @@ const mutations = gql`
   type Mutation {
     login(email: String!, password: String!): String!
   }
+  type Mutation {
+    delet( email:  String!): User
+  }
 `;
 
 const inputs = gql`
@@ -66,6 +72,7 @@ const inputs = gql`
     status: UserStatus!
     password: String!
   }
+  
 `;
 
 export default [

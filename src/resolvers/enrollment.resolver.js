@@ -4,12 +4,15 @@ import Projects from '../models/projects.model.js';
 import Users from '../models/users.model.js';
 
 const allEnrollments = async () => {
-  const enrollments = await Enrollments.find();
+  const enrollments = await Enrollments.find(); 
+//  const id={...enrollments[0]. _doc.project_id}
+//  project(id)
   return enrollments;
 }
 
 const project = async (parent) => {
   const project = await Projects.findById(parent.project_id);
+  console.log(project)
   return project;
 };
 
@@ -18,24 +21,12 @@ const student = async (parent) => {
   return student;
 };
 
-const register = async (parent, args) => {
-  console.log(args.input)
-  const enrollment = new Enrollments({
-    ...args.input
-  });
-  console.log(enrollment)
-  return enrollment.save();
-};
-
 export default {
-  Query: {
+  enrollmentQueries: {
     allEnrollments
   },
   Enrollment: {
     project,
     student,
-  },
-  enrollmentMutations:{
-    register
   }
 }
