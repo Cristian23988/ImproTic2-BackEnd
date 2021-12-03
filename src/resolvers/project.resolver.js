@@ -22,11 +22,12 @@ const deleteById = async (parent, args, context) => {
 };
 
 const registerProject = async (parent, args) => {
-  console.log(args.input)
+  const leaderId = await Users.findById(args.input.leader_id);
   const project = new Projects({
     ...args.input,
+    startDate: new Date(),
+    leader_id: leaderId
   });
-  console.log(project)
   return project.save();
 };
 
