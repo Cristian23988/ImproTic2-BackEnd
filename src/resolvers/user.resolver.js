@@ -22,13 +22,13 @@ const userById = async (parent, args, context) => {
   const user = await Users.findById(args._id);
   return user;
 };
-const delet = async (parent, args, context) => {
+const deleteUser = async (parent, args, context) => {
   console.log(args.email,"ELIMINADO")
   const user = await Users.findOne({ email: args.email });
  return user.remove();
 }
 
-const register = async (parent, args) => {
+const registerUser = async (parent, args) => {
   console.log(args.input)
   const user = new Users({
     ...args.input,
@@ -43,7 +43,7 @@ const userByEmail = async (parent, args, context) => {
   return user;
 };
 
-const login = async (parent, args) => {
+const loginUser = async (parent, args) => {
   const user = await Users.findOne({ email: args.email });
   const { password, _id, email } = user;
   if (!user) {
@@ -69,8 +69,8 @@ export default {
     userByEmail
   },
   userMutations: {
-    register,
-    login,
-    delet
+    registerUser,
+    loginUser,
+    deleteUser
   },
 }

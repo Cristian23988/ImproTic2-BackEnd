@@ -50,14 +50,14 @@ const queries = gql`
 
 const mutations = gql`
   type Mutation {
-    register(input: RegisterInput!): User!
+    registerUser(input: RegisterInput!): User!
   }
 
   type Mutation {
-    login(email: String!, password: String!): String!
+    loginUser(email: String!, password: String!): String!
   }
   type Mutation {
-    delet(email:  String!): User!
+    deleteUser(email:  String!): User!
   }
 `;
 
