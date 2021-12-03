@@ -4,11 +4,22 @@ import Projects from '../models/projects.model.js';
 import Users from '../models/users.model.js';
 
 const allEnrollments = async () => {
-  const enrollments = await Enrollments.find(); 
-//  const id={...enrollments[0]. _doc.project_id}
-//  project(id)
+  const enrollments = await Enrollments.aggregate([{
+      $lookup: {
+        from: 'projects',
+        localField: 'project_id',
+        foreignField: '_id',
+        as: 'project'
+      }
+    }, {
+      $unwind: { path: '$project' }
+    },{
+      $project: {
+        project: 0
+      }
+    }]);
   return enrollments;
-}
+};
 
 const project = async (parent) => {
   const project = await Projects.findById(parent.project_id);
