@@ -134,7 +134,7 @@ db.createCollection(collection, {
           bsonType: 'array'
         },
         budget: {
-          bsonType: 'decimal'
+          bsonType: 'number'
         },
         startDate: {
           bsonType: 'date'
@@ -161,7 +161,7 @@ const projects = [
     "name": "Seguridad en redes sociales",
     "generalObjective": "Fomentar la correcta utilización de las diferentes redes sociales.",
     "specificObjectives": ["Concientizar de la información expuesta en las redes sociales.", "Analizar la red de contactos en su red social."],
-    "budget": Decimal128('20000000'),
+    "budget": 20000000,
     "startDate": new Date(),
     "endDate": new Date(new Date().getTime() + 60*24*60*60000),
     "leader_id": db.users.findOne({email: 'diazalejandro123456@gmail.com'})._id,
@@ -171,7 +171,7 @@ const projects = [
     "name": "Robot auxiliar de parqueadero",
     "generalObjective": "Automatizar la reservación y ocupación de parqueaderos.",
     "specificObjectives": ["Agendar en menor tiempo posible.", "Encontrar rapidamente la mejor ubicación dentro del parqueadero."],
-    "budget": Decimal128('10000000'),
+    "budget": 10000000,
     "startDate": new Date(),
     "endDate": new Date(new Date().getTime() + 60*24*60*60000),
     "leader_id": db.users.findOne({email: 'cfbravo@unimayor.edu.co'})._id,
