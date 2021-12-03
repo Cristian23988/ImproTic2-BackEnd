@@ -27,17 +27,18 @@ const queries = gql`
 `;
 
 const mutations = gql`
-  type Mutations {
-    register(input: RegisterInput!): Enrollment!
+  type Mutation {
+    registerEnrollment(input: RegiInput!): Enrollment!
   }
-
+  type  Mutation {
+    deleteEnrollById(_id: ID): Enrollment!
+  }
 `;
 
 const inputs = gql`
-  input RegisterInput {
-    status: String
-    enrollmentDate: String
-    egresDate: String
+  input RegiInput {
+    projectId: ID!
+    studentId: ID!
   }
 `;
 
@@ -47,4 +48,6 @@ export default [
   enrollmentType,
   enums,
   queries,
+  mutations,
+  inputs
 ];

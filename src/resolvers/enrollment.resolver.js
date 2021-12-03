@@ -23,13 +23,26 @@ const allEnrollments = async () => {
 
 const project = async (parent) => {
   const project = await Projects.findById(parent.project_id);
-  console.log(project)
   return project;
 };
 
 const student = async (parent) => {
   const student = await Users.findById(parent.user_id);
   return student;
+};
+const deleteEnrollById = async (parent, args, context) => {
+  const enrollment = await Enrollments.findOne(args._id);
+  return enrollment.remove();
+};
+const registerEnrollment = async (parent, args, context) => {
+  const ProjectId = await Projects.findById(args.input.projectId);
+  const studentId = await Users.findById(args.input.studentId);
+  const enrollment = new Enrollments({
+    ...args.input,
+    project_id: ProjectId,
+    user_id: studentId
+  });
+  return enrollment.save();
 };
 
 export default {
@@ -39,5 +52,9 @@ export default {
   Enrollment: {
     project,
     student,
+  },
+  enrollmentMutations:{
+    registerEnrollment,
+    deleteEnrollById
   }
 }

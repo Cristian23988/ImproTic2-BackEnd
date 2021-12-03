@@ -57,7 +57,7 @@ const mutations = gql`
     login(email: String!, password: String!): String!
   }
   type Mutation {
-    delet( email:  String!): User!
+    delet(email:  String!): User!
   }
 `;
 
