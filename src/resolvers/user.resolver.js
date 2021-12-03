@@ -19,7 +19,6 @@ const user = async (parent, args, context) => {
 };
 
 const userById = async (parent, args, context) => {
-  console.log(args)
   const user = await Users.findById(args._id);
   return user;
 };
