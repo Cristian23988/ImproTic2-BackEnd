@@ -23,12 +23,10 @@ const userById = async (parent, args, context) => {
   const user = await Users.findById(args._id);
   return user;
 };
-const delet =async (args) => {
-  console.log(args)
-   const user = await Users.findOne({ _id: "61a9646cbf44ffebc37d9708" });
-  // return user.remove();
-
- return user;
+const delet = async (parent, args, context) => {
+  console.log(args.email,"ELIMINADO")
+  const user = await Users.findOne({ email: args.email });
+ return user.remove();
 }
 
 const register = async (parent, args) => {
