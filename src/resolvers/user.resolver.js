@@ -40,7 +40,6 @@ const registerUser = async (parent, args) => {
 
 
 const updateUser = async (parent, args) => {
-  console.log(args._id)
   const user = await Users.findById({ _id: args._id });
   user._id = args._id,
     user.email = args.input.email,
@@ -51,8 +50,7 @@ const updateUser = async (parent, args) => {
     user.role = args.input.role,
     user.status = args.input.status,
     user.password = args.input.password
- 
-  console.log(user)
+  
   return user.save();
 };
 
