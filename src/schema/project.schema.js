@@ -39,12 +39,39 @@ const queries = gql`
   }
 
   type Query {
-    project(_id: ID): Project
+    projectById(_id: ID): Project
   }
+`;
+const mutations = gql`
+  type Mutation {
+    registerProject(input: RegInput!): Project!
+  }
+
+  type Mutation {
+    deleteById(_id: ID): Project
+  }
+`;
+
+const inputP = gql`
+  input RegInput {
+    name: String!
+    generalObjective: String!
+    specificObjectives: [String]!
+    budget: Float!
+    startDate: String!
+    endDate: String!
+    leader_id: ID!
+    status: projectStatus!
+    phase: Phase
+  }
+  
 `;
 
 export default [
   projectType,
   enums,
-  queries
+  queries,
+  mutations,
+  inputP,
+  
 ];

@@ -3,7 +3,7 @@ import Enrollments from '../models/enrollments.model.js';
 import Users from "../models/users.model.js";
 
 const allProjects = async (parent, args, { user, errorMessage }) => {
-  if(!user) {
+  if (!user) {
     throw new Error(errorMessage);
   }
   console.log(user, errorMessage)
@@ -11,9 +11,23 @@ const allProjects = async (parent, args, { user, errorMessage }) => {
   return projects;
 };
 
-const project = async (parent, args) => {
-  const user = await Projects.findById(args._id);
-  return user;
+const projectById = async (parent, args, context) => {
+  const project = await Projects.findById(args._id);
+  return project;
+};
+
+const deleteById = async (parent, args, context) => {
+  const project = await Projects.findOne(args._id);
+  return project.remove();
+};
+
+const registerProject = async (parent, args) => {
+  console.log(args.input)
+  const project = new Projects({
+    ...args.input,
+  });
+  console.log(project)
+  return project.save();
 };
 
 const leader = async (parent) => {
@@ -30,9 +44,13 @@ const enrollments = async (parent) => {
 export default {
   projectQueries: {
     allProjects,
-    project,
+    projectById,
   },
   Project: {
     leader,
+  },
+  projectMutations: {
+    deleteById,
+    registerProject 
   }
 };
