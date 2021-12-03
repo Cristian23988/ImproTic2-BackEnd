@@ -6,7 +6,7 @@ import bcrypt from 'bcrypt';
 import Users from "../models/users.model.js";
 
 const allUsers = async (parent, args, { user, errorMessage }) => {
-  if(user) {
+  if (user) {
     throw new Error(errorMessage);
   }
   return await Users.find();
@@ -23,9 +23,9 @@ const userById = async (parent, args, context) => {
   return user;
 };
 const deleteUser = async (parent, args, context) => {
-  console.log(args.email,"ELIMINADO")
-  const user = await Users.findOne({ email: args.email });
- return user.remove();
+  console.log(args._id, "ELIMINADO")
+  const user = await Users.findById({ _id: args._id });
+  return user.remove();
 }
 
 const registerUser = async (parent, args) => {
@@ -34,6 +34,24 @@ const registerUser = async (parent, args) => {
     ...args.input,
     password: await bcrypt.hash(args.input.password, 12),
   });
+  console.log(user)
+  return user.save();
+};
+
+
+const updateUser = async (parent, args) => {
+  console.log(args._id)
+  const user = await Users.findById({ _id: args._id });
+  user._id = args._id,
+    user.email = args.input.email,
+    user.documentId = args.input.documentId,
+    user.name = args.input.name,
+    user.lastName = args.input.lastName,
+    user.fullName = args.input.fullName,
+    user.role = args.input.role,
+    user.status = args.input.status,
+    user.password = args.input.password
+ 
   console.log(user)
   return user.save();
 };
@@ -50,7 +68,7 @@ const loginUser = async (parent, args) => {
     throw new Error('User not found');
   }
   const isValid = await bcrypt.compare(args.password, password);
-  if(!isValid) {
+  if (!isValid) {
     throw new Error('Wrong password');
   }
   const token = await jwt.sign(
@@ -71,6 +89,7 @@ export default {
   userMutations: {
     registerUser,
     loginUser,
-    deleteUser
+    deleteUser,
+    updateUser
   },
 }
