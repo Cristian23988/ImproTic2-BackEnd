@@ -39,6 +39,7 @@ const inputs = gql`
   input RegiInput {
     projectId: ID!
     studentId: ID!
+    status: String
   }
 `;
 

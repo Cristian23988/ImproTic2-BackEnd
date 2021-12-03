@@ -37,11 +37,15 @@ const deleteEnrollById = async (parent, args, context) => {
 const registerEnrollment = async (parent, args, context) => {
   const ProjectId = await Projects.findById(args.input.projectId);
   const studentId = await Users.findById(args.input.studentId);
+  console.log(args.input)
   const enrollment = new Enrollments({
     ...args.input,
     project_id: ProjectId,
-    user_id: studentId
+    user_id: studentId,
+    enrollmentDate: new Date(),
+    status:args.input.status
   });
+  console.log(enrollment)
   return enrollment.save();
 };
 
