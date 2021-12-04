@@ -2,75 +2,109 @@
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
+// constants
+import { USER_STATUS, ROLES } from '../constants/user.constants.js';
+
 // models
 import Users from "../models/users.model.js";
 
-const allUsers = async (parent, args, { user, errorMessage }) => {
-  if (user) {
+const allUsers = async (parent, args, { userSesion, errorMessage }) => {
+  if (!userSesion) {
     throw new Error(errorMessage);
+  }else if(userSesion.role !== ROLES.ADMIN) {
+    throw new Error('No access');
   }
   return await Users.find();
 };
 
 const user = async (parent, args, context) => {
-  console.log(args)
   const user = await Users.findById(args._id);
   return user;
 };
 
-const userById = async (parent, args, context) => {
-  const user = await Users.findById(args._id);
-  return user;
+const userById = async (parent, args, { userSesion, errorMessage }, context) => {
+  if (!userSesion) {
+    throw new Error(errorMessage);
+  }else if(userSesion.role !== ROLES.ADMIN) {
+    throw new Error('No access');
+  }
+  return await Users.findById(args._id);
 };
 const deleteUser = async (parent, args, context) => {
-  console.log(args._id, "ELIMINADO")
+  /*if (!userSesion) {
+    throw new Error(errorMessage);
+  }else if(userSesion._id != id._id) {
+    throw new Error('No access');
+  }*/
   const user = await Users.findById({ _id: args._id });
   return user.remove();
 }
 
 const registerUser = async (parent, args) => {
-  console.log(args.input)
   const user = new Users({
     ...args.input,
     password: await bcrypt.hash(args.input.password, 12),
   });
-  console.log(user)
   return user.save();
 };
 
+const updateUser = async (parent, args, { userSesion, errorMessage }) => {
+  if (!userSesion) {
+    throw new Error(errorMessage);
+  }
+  const id = await Users.findById(args._id);
+  
+  if(userSesion.role == ROLES.ADMIN && userSesion._id != id._id) {
+    args.input = {status: args.input.status};
+  }else if(userSesion._id == id._id){
+    delete args.input.status;
+    delete args.input.role;
+  }
 
-const updateUser = async (parent, args) => {
-  const user = await Users.findById({ _id: args._id });
-  user._id = args._id,
-    user.email = args.input.email,
-    user.documentId = args.input.documentId,
-    user.name = args.input.name,
-    user.lastName = args.input.lastName,
-    user.fullName = args.input.fullName,
-    user.role = args.input.role,
-    user.status = args.input.status,
-    user.password = args.input.password
+  if(args.input.password){
+     const pass = await bcrypt.hash(args.input.password, 12);
+     args.input.password = pass;
+  }
+
+  const user = await Users.findOneAndUpdate(
+    { _id : id._id },
+    { $set: { ...args.input} },
+    { upsert: true, returnNewDocument : true},//devuelve los datos ya actualizados
+  );
   
   return user.save();
 };
 
-const userByEmail = async (parent, args, context) => {
+const userByEmail = async (parent, args, { userSesion, errorMessage }, context) => {
+  if (!userSesion) {
+    throw new Error(errorMessage);
+  }else if(userSesion.role !== ROLES.ADMIN) {
+    throw new Error('No access');
+  }
   const user = await Users.findOne({ email: args.email });
   return user;
 };
 
 const loginUser = async (parent, args) => {
   const user = await Users.findOne({ email: args.email });
-  const { password, _id, email } = user;
+  
   if (!user) {
-    throw new Error('User not found');
+    throw new Error('Email/password not found or incorrect');
   }
+
+  const { password, _id, email } = user;
   const isValid = await bcrypt.compare(args.password, password);
-  if (!isValid) {
-    throw new Error('Wrong password');
+  
+  if(!isValid){
+    throw new Error('Email/password not found or incorrect');
   }
+  
+  if(user.status !== USER_STATUS.AUTHORIZED){
+    throw new Error('Access denied');
+  }
+
   const token = await jwt.sign(
-    { userId: _id },
+    { userSesion: user},
     process.env.SECRET,
     { expiresIn: "1h" }
   );

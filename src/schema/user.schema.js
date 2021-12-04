@@ -11,6 +11,7 @@ const userType = gql`
     fullName: String!
     role: Role!
     status: UserStatus!
+    password: String
   }
 `;
 
@@ -60,7 +61,7 @@ const mutations = gql`
     deleteUser(_id:  ID!): User!
   }
   type Mutation {
-    updateUser(_id:  ID!, input: UpdateInput): User!
+    updateUser(_id:  ID!, input: UpdateInputUs!): User!
   }
 `;
 
@@ -75,17 +76,16 @@ const inputs = gql`
     status: UserStatus!
     password: String!
   }
-  input UpdateInput{
-    email: String!
-    documentId: Float!
-    name: String!
-    lastName: String!
-    fullName: String!
-    role: Role!
-    status: UserStatus!
-    password: String!
-  }
   
+  input UpdateInputUs{
+    email: String
+    documentId: Float
+    name: String
+    lastName: String
+    fullName: String
+    password: String
+    status: UserStatus
+  }
 `;
 
 export default [
