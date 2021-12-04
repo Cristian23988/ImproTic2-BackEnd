@@ -21,6 +21,17 @@ const deleteById = async (parent, args, context) => {
   return project.remove();
 };
 
+const updateProject = async (parent, args) => {
+  const id = await Projects.findById(args._id);
+  console.log(args)
+    const project = await Projects.findOneAndUpdate(
+      { _id : id._id },
+      { $set: { ...args.input} },
+      { upsert: true, returnNewDocument : true},//devuelve los datos ya actualizados
+      ); 
+      return project.save();
+};
+
 const registerProject = async (parent, args) => {
   const leaderId = await Users.findById(args.input.leader_id);
   const project = new Projects({
@@ -35,6 +46,7 @@ const leader = async (parent) => {
   const user = await Users.findById(parent.leader_id);
   return user;
 };
+
 
 const enrollments = async (parent) => {
   const enrollments = await Enrollments.find({ project_id: parent._id.toString() });
@@ -52,6 +64,7 @@ export default {
   },
   projectMutations: {
     deleteById,
-    registerProject 
+    registerProject ,
+    updateProject
   }
 };

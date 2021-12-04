@@ -34,6 +34,28 @@ const deleteEnrollById = async (parent, args, context) => {
   const enrollment = await Enrollments.findOne(args._id);
   return enrollment.remove();
 };
+
+const updateEnrollment = async (parent, args) => {
+  const id = await Enrollments.findById(args._id);
+  if(args.input.status=="rejected"){
+    const enrollment = await Enrollments.findOneAndUpdate(
+      { _id : id._id },
+      { $set: { ...args.input,egressDate: new Date()} },
+      { upsert: true, returnNewDocument : true},//devuelve los datos ya actualizados
+      ); 
+      return enrollment.save();
+  }else{
+    const enrollment = await Enrollments.findOneAndUpdate(
+      { _id : id._id },
+      { $set: { ...args.input} },
+      { upsert: true, returnNewDocument : true},//devuelve los datos ya actualizados
+      ); 
+      return enrollment.save();
+  }
+   
+
+  
+};
 const registerEnrollment = async (parent, args, context) => {
   const ProjectId = await Projects.findById(args.input.projectId);
   const studentId = await Users.findById(args.input.studentId);
@@ -58,6 +80,8 @@ export default {
   },
   enrollmentMutations:{
     registerEnrollment,
-    deleteEnrollById
+    deleteEnrollById,
+    updateEnrollment
+    
   }
 }

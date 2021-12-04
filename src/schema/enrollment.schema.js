@@ -33,12 +33,18 @@ const mutations = gql`
   type  Mutation {
     deleteEnrollById(_id: ID): Enrollment!
   }
+  type Mutation {
+    updateEnrollment(_id:ID, input: UpdateInputEn!): Enrollment!
+  }
 `;
 
 const inputs = gql`
   input RegiInput {
     projectId: ID!
     studentId: ID!
+    status: String
+  }
+  input UpdateInputEn {
     status: String
   }
 `;
