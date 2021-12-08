@@ -28,24 +28,24 @@ const queries = gql`
 
 const mutations = gql`
   type Mutation {
-    registerEnrollment(input: RegiInput!): Enrollment!
+    registerEnrollment(input: RegiInputEn!): Enrollment!
   }
   type  Mutation {
-    deleteEnrollById(_id: ID): Enrollment!
+    deleteEnrollById(_id:ID!): Enrollment!
   }
   type Mutation {
-    updateEnrollment(_id:ID, input: UpdateInputEn!): Enrollment!
+    updateEnrollment(_id:ID!, input: UpdateInputEn!): Enrollment!
   }
 `;
 
 const inputs = gql`
-  input RegiInput {
+  input RegiInputEn {
     projectId: ID!
     studentId: ID!
-    status: String
+    status: EnrollmentStatus
   }
   input UpdateInputEn {
-    status: String
+    status: EnrollmentStatus
   }
 `;
 
