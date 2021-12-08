@@ -43,6 +43,8 @@ const deleteUser = async (parent, args, context) => {
 const registerUser = async (parent, args) => {
   const user = new Users({
     ...args.input,
+    status: USER_STATUS.PENDING,
+    fullName: `${args.input.name} ${args.input.lastName}`,
     password: await bcrypt.hash(args.input.password, 12),
   });
   return user.save();

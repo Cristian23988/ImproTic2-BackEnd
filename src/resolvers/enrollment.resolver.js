@@ -64,8 +64,7 @@ const registerEnrollment = async (parent, args, context) => {
     ...args.input,
     project_id: ProjectId,
     user_id: studentId,
-    enrollmentDate: new Date(),
-    status:args.input.status
+    enrollmentDate: new Date()
   });
   return enrollment.save();
 };
