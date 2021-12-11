@@ -39,7 +39,7 @@ const queries = gql`
   }
 
   type Query {
-    projectById(_id: ID): Project
+    projectById(_id: ID!): Project
   }
 `;
 const mutations = gql`
@@ -48,7 +48,7 @@ const mutations = gql`
   }
 
   type Mutation {
-    deleteById(_id: ID): Project
+    deleteById(_id: ID!): Project
   }
   type Mutation {
     updateProject(_id: ID!, input: UpdateInputPro!): Project!
@@ -61,9 +61,6 @@ const inputP = gql`
     generalObjective: String!
     specificObjectives: [String]!
     budget: Float!
-    startDate: String!
-    endDate: String!
-    leader_id: ID!
   }
   input UpdateInputPro {
     name: String
