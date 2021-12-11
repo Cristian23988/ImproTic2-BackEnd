@@ -48,7 +48,7 @@ const mutations = gql`
   }
 
   type Mutation {
-    deleteById(_id: ID!): Project
+    deleteProject(_id: ID!): Project
   }
   type Mutation {
     updateProject(_id: ID!, input: UpdateInputPro!): Project!

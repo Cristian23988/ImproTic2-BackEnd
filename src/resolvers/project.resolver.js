@@ -1,5 +1,6 @@
 import Projects from "../models/projects.model.js";
 import Enrollments from '../models/enrollments.model.js';
+import Advances from '../models/advances.model.js';
 import Users from "../models/users.model.js";
 
 // constants
@@ -16,13 +17,29 @@ const allProjects = async (parent, args, { userSesion, errorMessage }) => {
   return projects;
 };
 
-const projectById = async (parent, args, context) => {
+const projectById = async (parent, args, { userSesion, errorMessage }) => {
+  if (!userSesion) {
+    throw new Error(errorMessage);
+  }
+
   const project = await Projects.findById(args._id);
   return project;
 };
 
-const deleteById = async (parent, args, context) => {
-  const project = await Projects.findOne(args._id);
+const deleteProject = async (parent, args, { userSesion, errorMessage }) => {
+  if (!userSesion) {
+    throw new Error(errorMessage);
+  }else if(userSesion.role == ROLES.STUDENT || userSesion.role == ROLES.ADMIN){
+    throw new Error("No access");
+  }
+  
+  const project = await Projects.findById(args._id);
+  
+  //Eliminar avances e inscripciones del proyecto
+  const enroll = await Enrollments.deleteMany({project_id: project._id});
+  const adv = await Advances.deleteMany({project_id: project._id});
+
+  //Eliminar proyecto
   return project.remove();
 };
 
@@ -111,7 +128,7 @@ export default {
     leader,
   },
   projectMutations: {
-    deleteById,
+    deleteProject,
     registerProject ,
     updateProject
   }
