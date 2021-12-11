@@ -66,7 +66,7 @@ const users = [
     "lastName": "Silva",
     "fullName": "Manuel Silva",
     "role": "admin",
-    "status": "pending",
+    "status": "authorized",
     "password": '$2b$12$G2l7qgq/YwhkiANObn1P9.VapCuqNPIwHsgz6DBor7OQN5dD651W6'
   },
   {
@@ -76,7 +76,7 @@ const users = [
     "lastName": "Muñoz",
     "fullName": "Diego Muñoz",
     "role": "student",
-    "status": "pending",
+    "status": "authorized",
     "password": '$2b$12$G2l7qgq/YwhkiANObn1P9.VapCuqNPIwHsgz6DBor7OQN5dD651W6'
   },
   {
@@ -86,7 +86,7 @@ const users = [
     "lastName": "Diaz",
     "fullName": "Diego Diaz",
     "role": "leader",
-    "status": "pending",
+    "status": "authorized",
     "password": '$2b$12$G2l7qgq/YwhkiANObn1P9.VapCuqNPIwHsgz6DBor7OQN5dD651W6'
   },
   {
@@ -96,16 +96,25 @@ const users = [
     "lastName": "Bravo",
     "fullName": "Cristian Bravo",
     "role": "leader",
-    "status": "pending",
+    "status": "authorized",
     "password": '$2b$12$G2l7qgq/YwhkiANObn1P9.VapCuqNPIwHsgz6DBor7OQN5dD651W6'
+  },
+  {
+    "email": "ca-mi-p@mail.com",
+    "documentId": 1112,
+    "name": "Cami",
+    "lastName": "Per",
+    "fullName": "Camila Perez",
+    "role": "leader",
+    "status": "authorized",
+    "password": "$2b$12$CtQoOj85Z/U/9pOh/ljcUeJgctNQY8bGPe8tcGafmJ9yrfKkB5Ffe"
   }
 ];
 
 // Insert users
 db.getCollection(collection).insertMany(users);
 
-// projects collection
-
+//PROJECTS
 collection = 'projects';
 
 // Drop projects collections
@@ -149,12 +158,13 @@ db.createCollection(collection, {
           enum: ['active', 'inactive']
         },
         phase: {
-          enum: ['started', 'in progress', 'ended']
+          enum: ['started', 'in_progress', 'ended']
         }
       }
     }
   }
 });
+db.getCollection(collection).createIndex({ name: 1 }, { unique: true, name: '_project_' });
 
 const projects = [
   {
@@ -164,7 +174,7 @@ const projects = [
     "budget": 20000000,
     "startDate": new Date(),
     "endDate": new Date(new Date().getTime() + 60*24*60*60000),
-    "leader_id": db.users.findOne({email: 'diazalejandro123456@gmail.com'})._id,
+    "leader_id": db.users.findOne({email: 'cfbravo@unimayor.edu.co'})._id,
     "status": "active"
   },
   {
@@ -176,6 +186,17 @@ const projects = [
     "endDate": new Date(new Date().getTime() + 60*24*60*60000),
     "leader_id": db.users.findOne({email: 'cfbravo@unimayor.edu.co'})._id,
     "status": "active"
+  },
+  {
+    "name": "Sensor de terremoto",
+    "generalObjective": "Anticipacion de un posible terremoto.",
+    "specificObjectives": ["Disminuir tiempo de evacuacion de las personas.","Analizar el lugar donde se encuentra el sensor."],
+    "budget": 15550000,
+    "startDate": new Date(),
+    "endDate": new Date(new Date().getTime() + 60*24*60*60000),
+    "leader_id": db.users.findOne({email: 'ca-mi-p@mail.com'})._id,
+    "status": "active",
+    "phase": "started",
   }
 ];
 
@@ -221,16 +242,20 @@ db.createCollection(collection, {
 });
 
 // Create unique index for project_id and user_id
-db.getCollection(collection).createIndex({ project_id: 1, user_id: 1 }, { unique: true, name: '_project_user_' });
+db.getCollection(collection).createIndex({ user_id: 2 }, { unique: true, name: '_project_user_' });
 
 const enrollments = [
   {
-    "project_id": db.projects.findOne({name: 'Seguridad en redes sociales'}, {_id: 1})._id,
-    "user_id": db.users.findOne({email: 'diazalejandro123456@gmail.com'}, {_id: 1})._id
+    "project_id": db.projects.findOne({name: 'Sensor de terremoto'}, {_id: 1})._id,
+    "user_id": db.users.findOne({email: 'ca-mi-p@mail.com'}, {_id: 1})._id,
+    "enrollmentDate": new Date(),
+    "status": "acepted"
   },
   {
-    "project_id": db.projects.findOne({name: 'Robot auxiliar de parqueadero'}, {_id: 1})._id,
-    "user_id": db.users.findOne({email: 'cfbravo@unimayor.edu.co'})._id
+    "project_id": db.projects.findOne({name: 'Seguridad en redes sociales'}, {_id: 1})._id,
+    "user_id": db.users.findOne({email: 'cfbravo@unimayor.edu.co'})._id,
+    "enrollmentDate": new Date(),
+    "status": "rejected"
   }
 ];
 

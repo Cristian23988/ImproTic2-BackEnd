@@ -27,7 +27,7 @@ const enums = gql`
   # Enum for phase values
   enum Phase {
     started,
-    in progress,
+    in_progress,
     ended
   }
 `;
@@ -44,19 +44,19 @@ const queries = gql`
 `;
 const mutations = gql`
   type Mutation {
-    registerProject(input: RegInput!): Project!
+    registerProject(input: RegInputPro!): Project!
   }
 
   type Mutation {
     deleteById(_id: ID): Project
   }
   type Mutation {
-    updateProject(_id: ID, input: UpdateInputPro!): Project!
+    updateProject(_id: ID!, input: UpdateInputPro!): Project!
   }
 `;
 
 const inputP = gql`
-  input RegInput {
+  input RegInputPro {
     name: String!
     generalObjective: String!
     specificObjectives: [String]!
@@ -64,18 +64,16 @@ const inputP = gql`
     startDate: String!
     endDate: String!
     leader_id: ID!
-    status: projectStatus!
-    phase: Phase
   }
   input UpdateInputPro {
-    name: String!
-    generalObjective: String!
-    specificObjectives: [String]!
-    budget: Float!
-    startDate: String!
-    endDate: String!
-    leader_id: ID!
-    status: projectStatus!
+    name: String
+    generalObjective: String
+    specificObjectives: [String]
+    budget: Float
+    startDate: String
+    endDate: String
+    leader_id: ID
+    status: projectStatus
     phase: Phase
   }
   
