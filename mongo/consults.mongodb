@@ -107,9 +107,7 @@ db.projects.findOneAndUpdate(
 );
 */
 
-
-
-//db.enrollments.deleteOne({_id: ObjectId("61b41a75bd166df008538a99")});
+//db.enrollments.deleteOne({_id: ObjectId("61b4235e8a40fa9b2c81af18")});
 /*db.enrollments.insertOne({
     "project_id": db.projects.findOne({name: 'Sensor de terremoto'}, {_id: 1})._id,
     "user_id": db.users.findOne({email: 'ca-mi-p@mail.com'}, {_id: 1})._id,
