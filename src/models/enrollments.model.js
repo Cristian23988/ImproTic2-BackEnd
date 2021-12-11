@@ -2,6 +2,9 @@ import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 const enrollmentsSchema = new Schema({
+  _id: {
+    type: Schema.ObjectId,
+  },
   project_id: {
     type: Schema.ObjectId,
     required: true,

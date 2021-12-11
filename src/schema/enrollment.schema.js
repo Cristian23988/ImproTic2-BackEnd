@@ -3,9 +3,12 @@ import { gql } from 'apollo-server';
 const enrollmentType = gql`
   # Enrollment
   type Enrollment {
+    _id: ID
+    project_id: ID
+    user_id: ID
     status: EnrollmentStatus
     enrollmentDate: String
-    egresDate: String
+    egressDate: String
     project: Project!
     student: User!
   }
@@ -48,8 +51,6 @@ const inputs = gql`
     status: EnrollmentStatus
   }
 `;
-
-
 
 export default [
   enrollmentType,

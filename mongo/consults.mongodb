@@ -44,8 +44,8 @@ use(database);
 // HU_003: Crear comandos para ejecutar en la base de datos MongoDB cuando necesite actualizar la información personal entonces podré ingresar los datos que deseo actualizar.
 /*
 db.users.findOneAndUpdate(
-   { documentId : 1020312418 },
-   { $set: { password: "$2b$12$SCOIym4yIyT2CCOKyDw34OHclBvnUFRvbyXsmgkNMjuqXUexLGdM2"} }, 
+   { documentId : 29102 },
+   { $set: { status: "pending", password: "$2b$12$SCOIym4yIyT2CCOKyDw34OHclBvnUFRvbyXsmgkNMjuqXUexLGdM2"} }, 
    { upsert: true, returnNewDocument : true},
 );
 */
@@ -58,10 +58,11 @@ db.users.findOneAndUpdate(
 /*
 //Listar los usuarios que aun no estan aceptados
 //db.users.find({status: "pending"});
-
+*/
 //Actualizar el estado del usuario
+/*
 db.users.findOneAndUpdate(
-   { documentId : 1230182630 },
+   { documentId : 1234567890 },
    { $set: { status: "authorized"} }, 
    { upsert: true, returnNewDocument : true},
 );
@@ -76,6 +77,7 @@ db.users.findOneAndUpdate(
 //db.projects.findOne({name: "Seguridad en redes sociales", phase: {$exists: false} });
 
 //Actualizar el estado del proyecto, si la fase no existe se actualiza a iniciado y la fecha.
+
 /*
 db.projects.findOneAndUpdate(
    { name: "Seguridad en redes sociales" },
@@ -103,6 +105,23 @@ db.projects.findOneAndUpdate(
     } }, 
    { upsert: true, returnNewDocument : true},
 );
+*/
+
+
+
+//db.enrollments.deleteOne({_id: ObjectId("61b41a75bd166df008538a99")});
+/*db.enrollments.insertOne({
+    "project_id": db.projects.findOne({name: 'Sensor de terremoto'}, {_id: 1})._id,
+    "user_id": db.users.findOne({email: 'ca-mi-p@mail.com'}, {_id: 1})._id,
+    "enrollmentDate": new Date(),
+    "status": "acepted"
+  });
+/*db.enrollments.findOneAndUpdate(
+      { project_id : ObjectId("61ace9dbd8f3fbda6dcd255f") , status: "acepted"},
+      { $set: { egressDate: } },
+      { upsert: true, returnNewDocument : true},//devuelve los datos ya actualizados
+    );
+/*
 //Al actualizar el projecto tambien debe actualizarse en inscripciones.
 //db.enrollments.findOne({project_id: {"$oid": "61985cf46c3a5b4035c9f42e"}, egressDate: {$exists, false} });
 db.enrollments.aggregate([{
@@ -124,15 +143,17 @@ db.enrollments.aggregate([{
 //db.projects.findOne({name: "Robot auxiliar de parqueadero", phase: 'in progress'});
 
 //Si el proyecto se encuentra en desarrollo.
+
+
 /*
 db.projects.findOneAndUpdate(
-   { name: "Robot auxiliar de parqueadero" },
+   { _id: ObjectId("61ace9dbd8f3fbda6dcd255f") },
    { $set: { 
         phase: "in progress"
     } }, 
    { upsert: true, returnNewDocument : true},
 );
-*/
+
 //HU_010: Como líder Dado que ingresé al sistema de gestión de proyectos Cuando requiera ver la lista de los estudiantes registrados en la plataforma (Tanto autorizados como no autorizados) Entonces podré ver la información de los estudiantes registrados en la plataforma.
 //db.users.find({role: "student", status: {$in: ["authorized", "unauthorized"]}});
 
@@ -141,8 +162,8 @@ db.projects.findOneAndUpdate(
 //db.users.find({documentId: 1230182630, role: "student", status: "pending"});
 /*
 db.users.findOneAndUpdate(
-   { documentId : 1230182630 },
-   { $set: { status: "authorized"} }, 
+   { documentId : 10203124118 },
+   { $set: { password: "$2b$12$G2l7qgq/YwhkiANObn1P9.VapCuqNPIwHsgz6DBor7OQN5dD651W6"} }, 
    { upsert: true, returnNewDocument : true},
 );
 */
@@ -150,13 +171,13 @@ db.users.findOneAndUpdate(
 //HU_012: Como líder Dado que ingresé al sistema de gestión de proyectos Cuando requiera liderar un nuevo proyecto Entonces podré crear un nuevo proyecto.
 /*
 db.projects.insertOne({
-    name: "Proyecto 2",
-    generalObjective: "Objectivo general.",
-    specificObjectives: ["Objectivo especifico 1.", "Objectivo especifico 2."],
-    budget: Decimal128('1300000'),
-    startDate: new Date(),
-    endDate: new Date(new Date().getTime() + 60*24*60*60000),
-    leader_id: db.users.findOne({email: 'cami20@mail.co', role: "leader"})._id,
+  "name": "Sensor de terremoto",
+    "generalObjective": "Anticipacion de un posible terremoto.",
+    "specificObjectives": ["Disminuir tiempo de evacuacion de las personas.", "Analizar el lugar donde se encuentra el sensor."],
+    "budget": 15000000,
+    "startDate": "2021-12-03T10:29:33.958+00:00",
+    "endDate": "2021-12-04T10:29:33.958+00:00",
+    "leader_id": ObjectId("61a7ca121bfa981dad30401f"),
     status: "active"
 });
 */
@@ -200,8 +221,16 @@ db.projects.findOneAndUpdate(
     } }, 
    { upsert: true, returnNewDocument : true},
 );
-*/
 
+db.projects.findOneAndUpdate(
+   {_id: ObjectId("61aa418edd53823a1192ff95") },
+   { $set: { 
+      phase: "started"
+    } }, 
+   { upsert: true, returnNewDocument : true},
+);
+*/
+//db.enrollments.find();
 //HU_015: Como líder Dado que ingresé al sistema de gestión de proyectos Cuando requiera revisar las solicitudes pendientes por aceptar o rechazar de estudiantes de inscripción a mis proyectos Entonces podré listar las solicitudes realizadas por los estudiantes.
 /*
 db.projects.aggregate([{
@@ -229,6 +258,7 @@ db.projects.aggregate([{
 */
 
 //HU_016: Como líder Dado que estoy viendo la lista de solicitudes de inscripción a los proyectos que lidero Cuando requiera cambiar el estado a la solicitudes Entonces podré aceptar o rechazar sus inscripciones.
+//db.enrollments.find();
 /*
 db.enrollments.findOneAndUpdate(
    { project_id: ObjectId("61985cf46c3a5b4035c9f42d") },
@@ -260,9 +290,9 @@ db.projects.aggregate([{
 //HU_018: Como líder Dado que estoy viendo la lista de los avances registrados en uno de los proyectos que lidero Cuando necesite agregar observaciones a un avance en uno de mis proyectos Entonces podré actualizar el campo de observaciones del avance seleccionado.
 /*
 db.advances.findOneAndUpdate(
-   { project_id: ObjectId("61985cf46c3a5b4035c9f42e") },
+   { _id: ObjectId("61aa3520c12899228924f00e") },
    { $set: { 
-      observations: "Eficiencia y disminución en tiempos de espera con la utilización del qr."
+      observations: 'Gran impacto de los asistentes después de asistir a la conferencia.'
     } }, 
    { upsert: true, returnNewDocument : true},
 );
@@ -276,7 +306,7 @@ db.projects.find({status: "active", phase: {$in: ["started","in progress"]}});
 //HU_020: Como estudiante Dado que estoy viendo la lista de los proyectos registrados en la plataforma Cuando requiera inscribirme en un proyecto Entonces podré generar una solicitud de inscripción al proyecto.
 /*
 db.enrollments.insertOne({
-    project_id: db.projects.findOne({name: 'Seguridad en redes sociales', status: "active"}, {_id: 1})._id,
+    project_id: db.projects.findOne({name: 'Sensor de terremoto', status: "active"}, {_id: 1})._id,
     user_id: db.users.findOne({email: 'cami20@mail.co'}, {_id: 1})._id
 });
 */
