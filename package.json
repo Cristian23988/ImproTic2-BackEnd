@@ -7,10 +7,6 @@
   "scripts": {
     "start": "nodemon src/index.js"
   },
-  "engines": {
-    "node": "14.x",
-    "npm": "2.5.x"
-  },
   "dependencies": {
     "apollo-server": "^3.5.0",
     "apollo-server-core": "^3.5.0",
