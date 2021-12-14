@@ -43,9 +43,7 @@ const mutations = gql`
 
 const inputs = gql`
   input RegiInputEn {
-    projectId: ID!
-    studentId: ID!
-    status: EnrollmentStatus
+    project_id: ID!
   }
   input UpdateInputEn {
     status: EnrollmentStatus
