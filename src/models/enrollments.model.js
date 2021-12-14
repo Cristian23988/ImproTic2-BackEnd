@@ -2,9 +2,6 @@ import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 const enrollmentsSchema = new Schema({
-  _id: {
-    type: Schema.ObjectId,
-  },
   project_id: {
     type: Schema.ObjectId,
     required: true,
@@ -25,6 +22,6 @@ const enrollmentsSchema = new Schema({
   }
 })
 
-const Enrollements = new mongoose.model('enrollments', enrollmentsSchema);
+const Enrollments = new mongoose.model('enrollments', enrollmentsSchema);
 
-export default Enrollements;
+export default Enrollments;

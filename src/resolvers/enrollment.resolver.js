@@ -3,6 +3,11 @@ import Enrollments from '../models/enrollments.model.js';
 import Projects from '../models/projects.model.js';
 import Users from '../models/users.model.js';
 
+// constants
+import { ROLES } from '../constants/user.constants.js';
+import { PHASE, PROJECTS_STATUS } from '../constants/projects.constants.js';
+import { ENROLLMENTS_STATUS } from '../constants/enrollments.constants.js';
+
 const allEnrollments = async () => {
   const enrollments = await Enrollments.aggregate([{
       $lookup: {
@@ -56,17 +61,50 @@ const updateEnrollment = async (parent, args) => {
 
   
 };
-const registerEnrollment = async (parent, args, context) => {
-  const ProjectId = await Projects.findById(args.input.projectId);
-  const studentId = await Users.findById(args.input.studentId);
 
-  const enrollment = new Enrollments({
+const registerEnrollment = async (parent, args, { userSesion, errorMessage }) => {
+  if (!userSesion) {
+    throw new Error(errorMessage);
+  }else if(userSesion.role == ROLES.ADMIN || userSesion.role == ROLES.LEADER){
+    throw new Error("No access");
+  }
+  const ProjId = await Projects.findById(args.input.project_id);
+
+  if(ProjId.phase == PHASE.ENDED || ProjId.status == PROJECTS_STATUS.INACTIVE){
+    throw new Error("Project ended/inactive");
+  }
+
+  const studentId = await Users.findById(userSesion._id);
+  const enroll = await Enrollments.find({project_id: ProjId._id, user_id: studentId._id}).sort({enrollmentDate: -1});//sort: orden descendente(-1), ascendente(1)
+
+  if(enroll && enroll[0].status == null){
+    throw new Error("Enrollment exist, wait admin/leader to acepted enrollment");
+  }
+
+  if(enroll && ProjId._id.equals(enroll[0].project_id) && enroll[0].status == ENROLLMENTS_STATUS.ACEPTED && !enroll[0].egressDate){
+    throw new Error("Exist enrollment to project");
+  }
+  
+  const date = new Date();//fecha actual
+  
+  if(enroll && enroll[0].status == ENROLLMENTS_STATUS.ACEPTED && enroll[0].egressDate){
+    const dias = 5*enroll[0].length;//dias*numero de intentos
+    enroll[0].egressDate = new Date(enroll[0].egressDate.getTime() + dias*24*60*60000);//Calculo de 5 dias: dias*horas*minutos*milesimasSegundos
+    
+    if(enroll[0].egressDate.equals(date)){
+      throw new Error("Debe esperar "+dias+" dias mínimo para hacer una nueva inscripción");
+    }
+  }
+  
+  args.input.project_id = ProjId._id;
+  args.input.user_id = studentId._id;
+  args.input.enrollmentDate = date;
+
+  const enrollments = new Enrollments({
     ...args.input,
-    project_id: ProjectId,
-    user_id: studentId,
-    enrollmentDate: new Date()
   });
-  return enrollment.save();
+  
+  return enrollments.save();
 };
 
 export default {
