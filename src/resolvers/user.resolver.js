@@ -11,7 +11,7 @@ import Users from "../models/users.model.js";
 const allUsers = async (parent, args, { userSesion, errorMessage }) => {
   if (!userSesion) {
     throw new Error(errorMessage);
-  }else if(userSesion.role !== ROLES.ADMIN) {
+  }else if(userSesion.role == ROLES.STUDENT) {
     throw new Error('No access');
   }
   return await Users.find();
