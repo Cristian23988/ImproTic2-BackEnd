@@ -26,40 +26,41 @@ const allEnrollments = async () => {
   return enrollments;
 };
 
-const project = async (parent) => {
-  const project = await Projects.findById(parent.project_id);
-  return project;
-};
-
-const student = async (parent) => {
-  const student = await Users.findById(parent.user_id);
-  return student;
-};
 const deleteEnrollById = async (parent, args, context) => {
   const enrollment = await Enrollments.findOne(args._id);
   return enrollment.remove();
 };
 
-const updateEnrollment = async (parent, args) => {
-  const id = await Enrollments.findById(args._id);
-  if(args.input.status=="rejected"){
-    const enrollment = await Enrollments.findOneAndUpdate(
-      { _id : id._id },
-      { $set: { ...args.input,egressDate: new Date()} },
-      { upsert: true, returnNewDocument : true},//devuelve los datos ya actualizados
-      ); 
-      return enrollment.save();
-  }else{
-    const enrollment = await Enrollments.findOneAndUpdate(
-      { _id : id._id },
-      { $set: { ...args.input} },
-      { upsert: true, returnNewDocument : true},//devuelve los datos ya actualizados
-      ); 
-      return enrollment.save();
+const updateEnrollment = async (parent, args, { userSesion, errorMessage }) => {
+  if (!userSesion) {
+    throw new Error(errorMessage);
+  }else if(userSesion.role == ROLES.ADMIN || userSesion.role == ROLES.STUDENT){
+    throw new Error("No access");
   }
-   
-
   
+  const enroll = await Enrollments.findById(args._id);
+
+  if(!enroll){
+    throw new Error("No found enrollment");
+  }
+
+  if(enroll.enrollmentDate && enroll.egressDate){
+    throw new Error("not possible to update");
+  }
+
+  if(args.input.status == ENROLLMENTS_STATUS.ACEPTED){
+    args.input = {status: args.input.status, enrollmentDate: new Date()};
+  }else if(args.input.status == ENROLLMENTS_STATUS.REJECTED){
+    args.input = {status: args.input.status, egressDate: new Date()};
+  }
+
+  const projId = await Projects.findOne({_id: enroll.project_id, leader_id: userSesion._id});
+  const enrollment = await Enrollments.findOneAndUpdate(
+    { _id : enroll._id , project_id: projId._id},
+    { $set: { ...args.input} },
+    { upsert: true, returnNewDocument : true},//devuelve los datos ya actualizados
+    );
+    return enrollment;
 };
 
 const registerEnrollment = async (parent, args, { userSesion, errorMessage }) => {
@@ -87,24 +88,33 @@ const registerEnrollment = async (parent, args, { userSesion, errorMessage }) =>
   
   const date = new Date();//fecha actual
   
-  if(enroll && enroll[0].status == ENROLLMENTS_STATUS.ACEPTED && enroll[0].egressDate){
-    const dias = 5*enroll[0].length;//dias*numero de intentos
-    enroll[0].egressDate = new Date(enroll[0].egressDate.getTime() + dias*24*60*60000);//Calculo de 5 dias: dias*horas*minutos*milesimasSegundos
+  if(enroll && enroll[0].egressDate){
+    const dias = 5*24*60*60000;//dias*numero de intentos
+    enroll[0].egressDate = new Date(enroll[0].egressDate.getTime() + dias);//Calculo de 5 dias: dias*horas*minutos*milesimasSegundos
     
-    if(enroll[0].egressDate.equals(date)){
-      throw new Error("Debe esperar "+dias+" dias mínimo para hacer una nueva inscripción");
+    if(date < enroll[0].egressDate){
+      throw new Error("Debe esperar 5 dias mínimo para hacer una nueva inscripción");
     }
   }
   
   args.input.project_id = ProjId._id;
   args.input.user_id = studentId._id;
-  args.input.enrollmentDate = date;
 
   const enrollments = new Enrollments({
     ...args.input,
   });
   
   return enrollments.save();
+};
+
+const project = async (parent) => {
+  const project = await Projects.findById(parent.project_id);
+  return project;
+};
+
+const student = async (parent) => {
+  const student = await Users.findById(parent.user_id);
+  return student;
 };
 
 export default {
