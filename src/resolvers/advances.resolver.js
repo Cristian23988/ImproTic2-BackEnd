@@ -2,6 +2,7 @@
 import Advances from '../models/advances.model.js';
 import Projects from '../models/projects.model.js';
 import Enrollments from '../models/enrollments.model.js';
+import Users from '../models/users.model.js';
 
 // constants
 import { ROLES } from '../constants/user.constants.js';
@@ -27,9 +28,30 @@ const allAdvances = async () => {
   return advance;
 };
 
-const deleteAdvance = async (parent, args, context) => {
-    const advance = await Advances.findById(args._id);
-    return advance.remove();
+const deleteAdvance = async (parent, args, { userSesion, errorMessage }) => {
+  if (!userSesion) {
+    throw new Error(errorMessage);
+  }else if(userSesion.role != ROLES.LEADER){
+    throw new Error("No access");
+  }
+  const idAdv = await Advances.findById(args._id);
+  
+  if(!idAdv){
+    throw new Error("No found advance");
+  }
+
+  const user = await Users.findById(userSesion._id);
+  const project = await Projects.find({_id: idAdv.project_id, leader_id: user._id});
+
+  if(!project){
+    throw new Error("Not found project vinculated");
+  }
+
+  if(project.phase == PHASE.ENDED || project.status == PROJECTS_STATUS.INACTIVE){
+    throw new Error("Project ended/inactive");
+  }
+
+  return idAdv.remove();
 };
 
 const registerAdvance = async (parent, args, { userSesion, errorMessage }) => {
