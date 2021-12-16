@@ -9,7 +9,8 @@ import { PHASE, PROJECTS_STATUS } from '../constants/projects.constants.js';
 import { ENROLLMENTS_STATUS } from '../constants/enrollments.constants.js';
 
 const allAdvances = async () => {
-  const advance = await Advances.aggregate([{
+  const advance = await Advances.find();
+  /*const advance = await Advances.aggregate([{
       $lookup: {
         from: 'projects',
         localField: 'project_id',
@@ -22,7 +23,7 @@ const allAdvances = async () => {
       $project: {
         project: 0
       }
-    }]);
+    }]);*/
   return advance;
 };
 
@@ -55,7 +56,7 @@ const registerAdvance = async (parent, args, { userSesion, errorMessage }) => {
   }
 
   if(enroll[0].status == ENROLLMENTS_STATUS.REJECTED){
-    throw new Error("No access");
+    throw new Error("No access, enrollment rejected");
   }
 
   args.input.project_id = project._id;
@@ -75,14 +76,51 @@ const registerAdvance = async (parent, args, { userSesion, errorMessage }) => {
   return advance.save();
 };
 
-const updateAdvance = async (parent, args) => {
-  const id = await Advances.findById(args._id);
+const updateAdvance = async (parent, args, { userSesion, errorMessage }) => {
+  if (!userSesion) {
+    throw new Error(errorMessage);
+  }else if(userSesion.role == ROLES.ADMIN){
+    throw new Error("No access");
+  }
+
+  const idAdv = await Advances.findById(args._id);
+
+  if(!idAdv){
+    throw new Error("No found advance");
+  }
+
+  const project = await Projects.findById(idAdv.project_id);
+
+  if(!project){
+    throw new Error("Not found project vinculated");
+  }
+
+  if(project.phase == PHASE.ENDED || project.status == PROJECTS_STATUS.INACTIVE){
+    throw new Error("Project ended/inactive");
+  }
+
+  if(userSesion.role == ROLES.LEADER){
+    args.input = {observations: args.input.observations};
+  }else{
+    const enroll = await Enrollments.find({project_id: project._id}).sort({enrollmentDate: -1});//sort: orden descendente(-1), ascendente(1)
+
+    if(!enroll[0]){
+      throw new Error("No enroll to project");
+    }
+
+    if(enroll[0].status == ENROLLMENTS_STATUS.REJECTED){
+      throw new Error("No access, enrollment rejected");
+    }
+
+    args.input = {descriptions: args.input.descriptions};
+  }
+
   const advance = await Advances.findOneAndUpdate(
-    { _id : id._id },
+    { _id : idAdv._id },
     { $set: { ...args.input} },
     { upsert: true, returnNewDocument : true},//devuelve los datos ya actualizados
   );  
-  return advance.save();
+  return advance;
 };
 
 const project = async (parent) => {
