@@ -104,8 +104,6 @@ const registerProject = async (parent, args, { userSesion, errorMessage }) => {
   const project = new Projects({
     ...args.input,
     status: PROJECTS_STATUS.INACTIVE,
-    startDate: new Date(),
-    endDate: new Date(),
     leader_id: leaderId._id
   });
   
