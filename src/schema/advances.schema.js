@@ -15,7 +15,7 @@ const advancesType = gql`
 const queries = gql`
   # Query all advances
   type Query {
-    allAdvances: [Advance]
+    allAdvances(project_id: ID): [Advance]
   }
 `;
 
