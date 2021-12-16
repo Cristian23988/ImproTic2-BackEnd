@@ -25,7 +25,7 @@ const enums = gql`
 const queries = gql`
   # Query all enrollments
   type Query {
-    allEnrollments: [Enrollment]
+    allEnrollments(project_id:ID): [Enrollment]
   }
 `;
 
