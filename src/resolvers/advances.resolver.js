@@ -30,23 +30,28 @@ const allAdvances = async (parent, args, { userSesion, errorMessage }) => {
     advances = await Advances.find({project_id: {'$in': projId}});
     return advances;
   }else{
-    if(!args.project_id){
-      projId = await Enrollments.find({user_id: user._id, status: 'acepted', egressDate: {'$exists': false}},{project_id:1, _id:0});
-    }{
-      projId = args.project_id;
-    }
-    
-    if(projId.lenght > 1){
-      projId = await Projects.find({_id: {'$in': projId.project_id}});
-      advances = await Advances.find({project_id: {'$in': projId.project_id}});
+    if(args.project_id){
+      projId = await Projects.findOne({_id: args.project_id},{_id:1});
+      advances = await Advances.find({project_id: projId});
     }else{
-      projId = await Projects.find({_id: {'$in': projId[0].project_id}});
-      advances = await Advances.find({project_id: {'$in': projId[0].project_id}});
+      projId = await Enrollments.find({user_id: user._id, status: 'acepted', egressDate: {'$exists': false}},{project_id:1, _id:0});
+
+      let countPro = projId.length;
+      
+      if(countPro > 1){
+        projId = await Projects.find({_id: {'$in': projId.project_id}},{_id:1});
+        advances = await Advances.find({project_id: {'$in': projId._id}});
+      }else{
+        projId = await Projects.find({_id: {'$in': projId[0].project_id}},{_id:1});
+        advances = await Advances.find({project_id: {'$in': projId[0]._id}});
+      }
     }
-    
-    
-    return advances;
-    
+
+    if(!advances[0]){
+      throw new ForbiddenError("No found advances");
+    }
+
+    return advances;    
   }
 };
 
