@@ -64,9 +64,20 @@ const updateUser = async (parent, args, { userSesion, errorMessage }) => {
     delete args.input.role;
   }
 
-  if(args.input.password){
-     const pass = await bcrypt.hash(args.input.password, 12);
-     args.input.password = pass;
+  if(args.input.name && args.input.lastName){
+    if(args.input.name != id.name && args.input.lastName != id.lastName){
+      args.input.fullName = args.input.name+' '+args.input.lastName;
+    }
+  }
+
+  if(args.input.name){
+    if(args.input.name != id.name){
+      args.input.fullName = args.input.name+' '+id.lastName;
+    }
+  }else if(args.input.lastName){
+    if(args.input.lastName != id.lastName){
+      args.input.fullName = id.name+' '+args.input.lastName;
+    }
   }
 
   const user = await Users.findOneAndUpdate(
