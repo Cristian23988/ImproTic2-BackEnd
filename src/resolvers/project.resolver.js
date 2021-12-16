@@ -2,6 +2,7 @@ import Projects from "../models/projects.model.js";
 import Enrollments from '../models/enrollments.model.js';
 import Advances from '../models/advances.model.js';
 import Users from "../models/users.model.js";
+import { AuthenticationError, ForbiddenError } from 'apollo-server';
 
 // constants
 import { ROLES } from '../constants/user.constants.js';
@@ -10,7 +11,7 @@ import { ENROLLMENTS_STATUS } from '../constants/enrollments.constants.js';
 
 const allProjects = async (parent, args, { userSesion, errorMessage }) => {
   if (!userSesion) {
-    throw new Error(errorMessage);
+    throw new AuthenticationError(errorMessage);
   }
 
   const projects = await Projects.find();
@@ -19,7 +20,7 @@ const allProjects = async (parent, args, { userSesion, errorMessage }) => {
 
 const projectById = async (parent, args, { userSesion, errorMessage }) => {
   if (!userSesion) {
-    throw new Error(errorMessage);
+    throw new AuthenticationError(errorMessage);
   }
 
   const project = await Projects.findById(args._id);
@@ -28,9 +29,9 @@ const projectById = async (parent, args, { userSesion, errorMessage }) => {
 
 const deleteProject = async (parent, args, { userSesion, errorMessage }) => {
   if (!userSesion) {
-    throw new Error(errorMessage);
+    throw new AuthenticationError(errorMessage);
   }else if(userSesion.role == ROLES.STUDENT || userSesion.role == ROLES.ADMIN){
-    throw new Error("No access");
+    throw new ForbiddenError("No access");
   }
   
   const project = await Projects.findById(args._id);
@@ -45,9 +46,9 @@ const deleteProject = async (parent, args, { userSesion, errorMessage }) => {
 
 const updateProject = async (parent, args, { userSesion, errorMessage }) => {
   if (!userSesion) {
-    throw new Error(errorMessage);
+    throw new AuthenticationError(errorMessage);
   }else if(userSesion.role == ROLES.STUDENT){
-    throw new Error("No access");
+    throw new ForbiddenError("No access");
   }
   
   const idProject = await Projects.findById(args._id); //Consultar projecto
@@ -55,7 +56,7 @@ const updateProject = async (parent, args, { userSesion, errorMessage }) => {
 
   //Validar si no ha finalizado el project
   if(idProject.phase == PHASE.ENDED){
-    throw new Error("Project ended");
+    throw new ForbiddenError("Project ended");
   }
 
   //Validar roles
@@ -64,7 +65,7 @@ const updateProject = async (parent, args, { userSesion, errorMessage }) => {
   if(userSesion.role == ROLES.ADMIN){
     args.input = {status: args.input.status, phase: args.input.phase};
   }else if(!idProject.leader_id.equals(userId._id) && idProject.status == PROJECTS_STATUS.INACTIVE){ //Validar si NO es el lider de ese proyecto
-    throw new Error("No access");
+    throw new ForbiddenError("No access");
   }
   
   if(args.input.phase && args.input.phase == PHASE.ENDED){
@@ -94,9 +95,9 @@ const updateProject = async (parent, args, { userSesion, errorMessage }) => {
 
 const registerProject = async (parent, args, { userSesion, errorMessage }) => {
   if (!userSesion) {
-    throw new Error(errorMessage);
+    throw new AuthenticationError(errorMessage);
   }else if(userSesion.role == ROLES.STUDENT || userSesion.role == ROLES.ADMIN){
-    throw new Error("No access");
+    throw new ForbiddenError("No access");
   }
   const leaderId = await Users.findById(userSesion._id);
   

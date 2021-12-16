@@ -241,19 +241,16 @@ db.createCollection(collection, {
   }
 });
 
-// Create unique index for project_id and user_id
-db.getCollection(collection).createIndex({ user_id: 2 }, { unique: true, name: '_project_user_' });
-
 const enrollments = [
   {
     "project_id": db.projects.findOne({name: 'Sensor de terremoto'}, {_id: 1})._id,
-    "user_id": db.users.findOne({email: 'ca-mi-p@mail.com'}, {_id: 1})._id,
+    "user_id": db.users.findOne({email: 'diegofelipem99@gmail.com'}, {_id: 1})._id,
     "enrollmentDate": new Date(),
     "status": "acepted"
   },
   {
     "project_id": db.projects.findOne({name: 'Seguridad en redes sociales'}, {_id: 1})._id,
-    "user_id": db.users.findOne({email: 'cfbravo@unimayor.edu.co'})._id,
+    "user_id": db.users.findOne({email: 'diegofelipem99@gmail.com'})._id,
     "enrollmentDate": new Date(),
     "status": "rejected"
   }
@@ -276,7 +273,7 @@ db.getCollection(collection).drop();
 db.createCollection(collection, {
   validator: {
     $jsonSchema: {
-      required: ['project_id', 'addDate', 'description', 'observations'],
+      required: ['project_id', 'addDate', 'description'],
       properties: {
         project_id: {
           bsonType: 'objectId',

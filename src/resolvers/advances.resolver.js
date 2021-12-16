@@ -2,60 +2,105 @@
 import Advances from '../models/advances.model.js';
 import Projects from '../models/projects.model.js';
 import Enrollments from '../models/enrollments.model.js';
+import Users from '../models/users.model.js';
+import { AuthenticationError, ForbiddenError } from 'apollo-server';
 
 // constants
 import { ROLES } from '../constants/user.constants.js';
 import { PHASE, PROJECTS_STATUS } from '../constants/projects.constants.js';
 import { ENROLLMENTS_STATUS } from '../constants/enrollments.constants.js';
 
-const allAdvances = async () => {
-  const advance = await Advances.aggregate([{
-      $lookup: {
-        from: 'projects',
-        localField: 'project_id',
-        foreignField: '_id',
-        as: 'project'
-      }
-    }, {
-      $unwind: { path: '$project' }
-    },{
-      $project: {
-        project: 0
-      }
-    }]);
-  return advance;
+const allAdvances = async (parent, args, { userSesion, errorMessage }) => {
+  if (!userSesion) {
+    throw new AuthenticationError(errorMessage);
+  }else if(userSesion.role == ROLES.ADMIN){
+    throw new ForbiddenError("No access");
+  }
+
+  let advances = null;
+  let projId = null;
+  const user = await Users.findById(userSesion._id);
+
+  if(userSesion.role == ROLES.LEADER){
+    if(args.project_id){
+      projId = await Projects.find({leader_id: user._id, _id: args.project_id},{_id:1});
+    }else{
+      projId = await Projects.find({leader_id: user._id},{_id:1});
+    }
+    advances = await Advances.find({project_id: {'$in': projId}});
+    return advances;
+  }else{
+    if(!args.project_id){
+      projId = await Enrollments.find({user_id: user._id, status: 'acepted', egressDate: {'$exists': false}},{project_id:1, _id:0});
+    }{
+      projId = args.project_id;
+    }
+    
+    if(projId.lenght > 1){
+      projId = await Projects.find({_id: {'$in': projId.project_id}});
+      advances = await Advances.find({project_id: {'$in': projId.project_id}});
+    }else{
+      projId = await Projects.find({_id: {'$in': projId[0].project_id}});
+      advances = await Advances.find({project_id: {'$in': projId[0].project_id}});
+    }
+    
+    
+    return advances;
+    
+  }
 };
 
-const deleteAdvance = async (parent, args, context) => {
-    const advance = await Advances.findById(args._id);
-    return advance.remove();
+const deleteAdvance = async (parent, args, { userSesion, errorMessage }) => {
+  if (!userSesion) {
+    throw new AuthenticationError(errorMessage);
+  }else if(userSesion.role != ROLES.LEADER){
+    throw new ForbiddenError("No access");
+  }
+  const idAdv = await Advances.findById(args._id);
+  
+  if(!idAdv){
+    throw new ForbiddenError("No found advance");
+  }
+
+  const user = await Users.findById(userSesion._id);
+  const project = await Projects.find({_id: idAdv.project_id, leader_id: user._id});
+
+  if(!project){
+    throw new ForbiddenError("Not found project vinculated");
+  }
+
+  if(project.phase == PHASE.ENDED || project.status == PROJECTS_STATUS.INACTIVE){
+    throw new ForbiddenError("Project ended/inactive");
+  }
+
+  return idAdv.remove();
 };
 
 const registerAdvance = async (parent, args, { userSesion, errorMessage }) => {
   if (!userSesion) {
-    throw new Error(errorMessage);
+    throw new AuthenticationError(errorMessage);
   }else if(userSesion.role != ROLES.STUDENT){
-    throw new Error("No access");
+    throw new ForbiddenError("No access");
   }
 
   if(!args.input.project_id){
-    throw new Error("Id project required");
+    throw new ForbiddenError("Id project required");
   }
   
   const project = await Projects.findById(args.input.project_id);
 
   if(project && (project.phase == PHASE.ENDED || project.status == PROJECTS_STATUS.INACTIVE)){
-    throw new Error("Project ended/inactive");
+    throw new ForbiddenError("Project ended/inactive");
   }
 
   const enroll = await Enrollments.find({project_id: project._id}).sort({enrollmentDate: -1});//sort: orden descendente(-1), ascendente(1)
 
   if(!enroll[0]){
-    throw new Error("No enroll to project");
+    throw new ForbiddenError("No enroll to project");
   }
 
   if(enroll[0].status == ENROLLMENTS_STATUS.REJECTED){
-    throw new Error("No access");
+    throw new ForbiddenError("No access, enrollment rejected");
   }
 
   args.input.project_id = project._id;
@@ -75,14 +120,51 @@ const registerAdvance = async (parent, args, { userSesion, errorMessage }) => {
   return advance.save();
 };
 
-const updateAdvance = async (parent, args) => {
-  const id = await Advances.findById(args._id);
+const updateAdvance = async (parent, args, { userSesion, errorMessage }) => {
+  if (!userSesion) {
+    throw new AuthenticationError(errorMessage);
+  }else if(userSesion.role == ROLES.ADMIN){
+    throw new ForbiddenError("No access");
+  }
+
+  const idAdv = await Advances.findById(args._id);
+
+  if(!idAdv){
+    throw new ForbiddenError("No found advance");
+  }
+
+  const project = await Projects.findById(idAdv.project_id);
+
+  if(!project){
+    throw new ForbiddenError("Not found project vinculated");
+  }
+
+  if(project.phase == PHASE.ENDED || project.status == PROJECTS_STATUS.INACTIVE){
+    throw new ForbiddenError("Project ended/inactive");
+  }
+
+  if(userSesion.role == ROLES.LEADER){
+    args.input = {observations: args.input.observations};
+  }else{
+    const enroll = await Enrollments.find({project_id: project._id}).sort({enrollmentDate: -1});//sort: orden descendente(-1), ascendente(1)
+
+    if(!enroll[0]){
+      throw new ForbiddenError("No enroll to project");
+    }
+
+    if(enroll[0].status == ENROLLMENTS_STATUS.REJECTED){
+      throw new ForbiddenError("No access, enrollment rejected");
+    }
+
+    args.input = {descriptions: args.input.descriptions};
+  }
+
   const advance = await Advances.findOneAndUpdate(
-    { _id : id._id },
+    { _id : idAdv._id },
     { $set: { ...args.input} },
     { upsert: true, returnNewDocument : true},//devuelve los datos ya actualizados
   );  
-  return advance.save();
+  return advance;
 };
 
 const project = async (parent) => {
