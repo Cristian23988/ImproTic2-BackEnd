@@ -33,8 +33,14 @@ const allEnrollments = async (parent, args, { userSesion, errorMessage }) => {
   }
 };
 
-const deleteEnrollById = async (parent, args, context) => {
-  const enrollment = await Enrollments.findOne(args._id);
+const deleteEnrollById = async (parent, args,{ userSesion, errorMessage }) => {
+  if (!userSesion) {
+    throw new Error(errorMessage);
+  }else if(userSesion.role == ROLES.ADMIN || userSesion.role == ROLES.LEADER){
+    throw new Error("No access");
+  }
+
+  const enrollment = await Enrollments.findById(args._id);
   return enrollment.remove();
 };
 
