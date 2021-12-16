@@ -79,6 +79,10 @@ const updateProject = async (parent, args, { userSesion, errorMessage }) => {
       { $set: { egressDate: date } },
     );
   }
+
+  if(args.input.status == PROJECTS_STATUS.ACTIVE){
+    args.input.phase = PHASE.STARTED;
+  }
   
   const project = await Projects.findOneAndUpdate(
     { _id : idProject._id },

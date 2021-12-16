@@ -3,11 +3,12 @@ import { gql } from 'apollo-server';
 const advancesType = gql`
   # Advances
   type Advance {
+    _id: ID!
+    project_id: ID!
     addDate: String!
     description: String!
     observations: String!
     project: Project
-    egressDate: String!
   }
 `;
 
@@ -35,9 +36,7 @@ const mutations = gql`
 const inputs = gql`
   input RegisterInputAd {
     project_id: ID!
-    addDate: String!
     description: String!
-    observations: String!
   }
 
   input UpdateInputAd{

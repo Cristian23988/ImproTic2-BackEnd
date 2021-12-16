@@ -92,7 +92,6 @@ const registerEnrollment = async (parent, args, { userSesion, errorMessage }) =>
   const enroll = await Enrollments.find({project_id: ProjId._id, user_id: studentId._id}).sort({enrollmentDate: -1});//sort: orden descendente(-1), ascendente(1)
   
   if(enroll[0] && enroll[0].status == null){
-    
     throw new Error("Enrollment exist, wait admin/leader to acepted enrollment");
   }
 

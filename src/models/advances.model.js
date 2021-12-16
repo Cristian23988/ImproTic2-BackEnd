@@ -15,8 +15,7 @@ const advancesSchema = new Schema({
         required: true
     },
     observations: {
-        type: 'string',
-        required: true
+        type: 'string'
     },
 })
 
