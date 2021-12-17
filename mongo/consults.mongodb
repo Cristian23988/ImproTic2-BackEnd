@@ -11,13 +11,13 @@ use(database);
 
 // Insertar si no esta en la BD
 /*db.users.insertOne({
-    "email": "pepi21@mail.co",
-    "documentId": Long('1630'),
-    "name": "Pepito",
-    "lastName": "Pito",
-    "fullName": "Pepito Pito",
-    "role": "admin",
-    "status": "pending",
+    "email": "eleonora@mail.co",
+    "documentId": 1630,
+    "name": "Eleonora",
+    "lastName": "De Diaz",
+    "fullName": "Eleo y Diaz por siempre",
+    "role": "student",
+    "status": "authorized",
     "password": "$2b$12$G2l7qgq/YwhkiANObn1P9.VapCuqNPIwHsgz6DBor7OQN5dD651W6"
   });
 
@@ -60,10 +60,11 @@ db.users.findOneAndUpdate(
 //db.users.find({status: "pending"});
 */
 //Actualizar el estado del usuario
+//db.users.find();
 /*
 db.users.findOneAndUpdate(
-   { documentId : 1234567890 },
-   { $set: { status: "authorized"} }, 
+   { email: 'cristiano@gmail.com' },
+   { $set: { status: "authorized"} },
    { upsert: true, returnNewDocument : true},
 );
 */
@@ -107,7 +108,30 @@ db.projects.findOneAndUpdate(
 );
 */
 
-//db.enrollments.deleteOne({_id: ObjectId("61b4235e8a40fa9b2c81af18")});
+/*
+collection = 'enrollments';
+
+
+const enrollments = [
+  {
+    "project_id": db.projects.findOne({name: 'Fue primero el fosforo o el encendedor'}, {_id: 1})._id,
+    "user_id": db.users.findOne({email: 'eleonora@mail.co'}, {_id: 1})._id,
+    "enrollmentDate": new Date(),
+    "status": "acepted"
+  },
+  {
+    "project_id": db.projects.findOne({name: 'Seguridad en redes sociales'}, {_id: 1})._id,
+    "user_id": db.users.findOne({email: 'eleonora@mail.co'})._id,
+    "enrollmentDate": new Date(),
+    "status": "acepted"
+  }
+];
+
+// Insert enrollments
+db.getCollection(collection).insertMany(enrollments);
+*/
+
+//db.enrollments.deleteOne({_id: ObjectId("61bb807263570312dbd1ace1")});
 /*db.enrollments.insertOne({
     "project_id": db.projects.findOne({name: 'Sensor de terremoto'}, {_id: 1})._id,
     "user_id": db.users.findOne({email: 'ca-mi-p@mail.com'}, {_id: 1})._id,
@@ -266,7 +290,6 @@ db.enrollments.findOneAndUpdate(
    { upsert: true, returnNewDocument : true},
 );
 */
-
 //HU_017: Como líder Dado que estoy viendo la lista de los proyectos que he registrado en la plataforma Cuando necesite realizar una revisión a uno de mis proyectos Entonces podré listar la información relacionada al proyecto que deseo revisar (Incluyendo los avances).
 /*
 db.projects.aggregate([{
@@ -304,8 +327,8 @@ db.projects.find({status: "active", phase: {$in: ["started","in progress"]}});
 //HU_020: Como estudiante Dado que estoy viendo la lista de los proyectos registrados en la plataforma Cuando requiera inscribirme en un proyecto Entonces podré generar una solicitud de inscripción al proyecto.
 /*
 db.enrollments.insertOne({
-    project_id: db.projects.findOne({name: 'Sensor de terremoto', status: "active"}, {_id: 1})._id,
-    user_id: db.users.findOne({email: 'cami20@mail.co'}, {_id: 1})._id
+    project_id: db.projects.findOne({name: 'Sensor de terremoto'}, {_id: 1})._id,
+    user_id: db.users.findOne({email: 'diegofelipem99@gmail.com'}, {_id: 1})._id
 });
 */
 
