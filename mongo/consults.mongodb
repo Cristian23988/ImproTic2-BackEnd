@@ -2,7 +2,7 @@
 
 const database = 'ImproTicDB';
 use(database);
-
+//db.projects.find();
 // HU_001: cuando necesite registrarme en el sistema entonces podré ingresar los datos de registro (Incluyendo elegir el rol al que aspiro).
 
 // Validar que no se encuentre en la BD.
@@ -78,10 +78,10 @@ db.users.findOneAndUpdate(
 //db.projects.findOne({name: "Seguridad en redes sociales", phase: {$exists: false} });
 
 //Actualizar el estado del proyecto, si la fase no existe se actualiza a iniciado y la fecha.
-
+db.advances.find();
 /*
 db.projects.findOneAndUpdate(
-   { name: "Seguridad en redes sociales" },
+   { name: "Fue primero el fosforo o el encendedor" },
    { $set: { 
         status: "active",
         phase:   "started",

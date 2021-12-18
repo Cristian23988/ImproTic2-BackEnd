@@ -110,6 +110,7 @@ const registerAdvance = async (parent, args, { userSesion, errorMessage }) => {
 
   args.input.project_id = project._id;
   args.input.addDate = new Date();
+  args.input.observations = "";
 
   if(project.phase == PHASE.STARTED){
     const proj = await Projects.findOneAndUpdate(
