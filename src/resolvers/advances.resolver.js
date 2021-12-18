@@ -14,7 +14,7 @@ const allAdvances = async (parent, args, { userSesion, errorMessage }) => {
   if (!userSesion) {
     throw new AuthenticationError(errorMessage);
   }else if(userSesion.role == ROLES.ADMIN){
-    throw new ForbiddenError("No access");
+    throw new Error("No access");
   }
 
   let advances = null;
@@ -48,7 +48,7 @@ const allAdvances = async (parent, args, { userSesion, errorMessage }) => {
     }
 
     if(!advances[0]){
-      throw new ForbiddenError("No found advances");
+      throw new Error("No found advances");
     }
 
     return advances;    
@@ -59,23 +59,23 @@ const deleteAdvance = async (parent, args, { userSesion, errorMessage }) => {
   if (!userSesion) {
     throw new AuthenticationError(errorMessage);
   }else if(userSesion.role != ROLES.LEADER){
-    throw new ForbiddenError("No access");
+    throw new Error("No access");
   }
   const idAdv = await Advances.findById(args._id);
   
   if(!idAdv){
-    throw new ForbiddenError("No found advance");
+    throw new Error("No found advance");
   }
 
   const user = await Users.findById(userSesion._id);
   const project = await Projects.find({_id: idAdv.project_id, leader_id: user._id});
 
   if(!project){
-    throw new ForbiddenError("Not found project vinculated");
+    throw new Error("Not found project vinculated");
   }
 
   if(project.phase == PHASE.ENDED || project.status == PROJECTS_STATUS.INACTIVE){
-    throw new ForbiddenError("Project ended/inactive");
+    throw new Error("Project ended/inactive");
   }
 
   return idAdv.remove();
@@ -85,27 +85,27 @@ const registerAdvance = async (parent, args, { userSesion, errorMessage }) => {
   if (!userSesion) {
     throw new AuthenticationError(errorMessage);
   }else if(userSesion.role != ROLES.STUDENT){
-    throw new ForbiddenError("No access");
+    throw new Error("No access");
   }
 
   if(!args.input.project_id){
-    throw new ForbiddenError("Id project required");
+    throw new Error("Id project required");
   }
   
   const project = await Projects.findById(args.input.project_id);
 
   if(project && (project.phase == PHASE.ENDED || project.status == PROJECTS_STATUS.INACTIVE)){
-    throw new ForbiddenError("Project ended/inactive");
+    throw new Error("Project ended/inactive");
   }
 
   const enroll = await Enrollments.find({project_id: project._id}).sort({enrollmentDate: -1});//sort: orden descendente(-1), ascendente(1)
 
   if(!enroll[0]){
-    throw new ForbiddenError("No enroll to project");
+    throw new Error("No enroll to project");
   }
 
   if(enroll[0].status == ENROLLMENTS_STATUS.REJECTED){
-    throw new ForbiddenError("No access, enrollment rejected");
+    throw new Error("No access, enrollment rejected");
   }
 
   args.input.project_id = project._id;
@@ -130,23 +130,23 @@ const updateAdvance = async (parent, args, { userSesion, errorMessage }) => {
   if (!userSesion) {
     throw new AuthenticationError(errorMessage);
   }else if(userSesion.role == ROLES.ADMIN){
-    throw new ForbiddenError("No access");
+    throw new Error("No access");
   }
 
   const idAdv = await Advances.findById(args._id);
 
   if(!idAdv){
-    throw new ForbiddenError("No found advance");
+    throw new Error("No found advance");
   }
 
   const project = await Projects.findById(idAdv.project_id);
 
   if(!project){
-    throw new ForbiddenError("Not found project vinculated");
+    throw new Error("Not found project vinculated");
   }
 
   if(project.phase == PHASE.ENDED || project.status == PROJECTS_STATUS.INACTIVE){
-    throw new ForbiddenError("Project ended/inactive");
+    throw new Error("Project ended/inactive");
   }
 
   if(userSesion.role == ROLES.LEADER){
@@ -155,11 +155,11 @@ const updateAdvance = async (parent, args, { userSesion, errorMessage }) => {
     const enroll = await Enrollments.find({project_id: project._id}).sort({enrollmentDate: -1});//sort: orden descendente(-1), ascendente(1)
 
     if(!enroll[0]){
-      throw new ForbiddenError("No enroll to project");
+      throw new Error("No enroll to project");
     }
 
     if(enroll[0].status == ENROLLMENTS_STATUS.REJECTED){
-      throw new ForbiddenError("No access, enrollment rejected");
+      throw new Error("No access, enrollment rejected");
     }
 
     args.input = {descriptions: args.input.descriptions};
