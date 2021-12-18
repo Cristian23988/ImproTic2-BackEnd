@@ -81,7 +81,7 @@ const updateProject = async (parent, args, { userSesion, errorMessage }) => {
     );
   }
 
-  if(args.input.status == PROJECTS_STATUS.ACTIVE){
+  if(args.input.status == PROJECTS_STATUS.ACTIVE && !idProject.phase){
     args.input.phase = PHASE.STARTED;
   }
   
